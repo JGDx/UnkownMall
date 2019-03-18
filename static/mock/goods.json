@@ -1,0 +1,24 @@
+{
+  "status": "0",
+  "msg": "",
+  "result": [
+    {
+      "productId": "100001",
+      "productName": "音箱",
+      "productPrice": 375,
+      "productImg": "1.jpg"
+    },
+    {
+      "productId": "100002",
+      "productName": "扳手",
+      "productPrice": 47,
+      "productImg": "2.jpg"
+    },
+    {
+      "productId": "100003",
+      "productName": "耳机",
+      "productPrice": 999,
+      "productImg": "3.jpg"
+    }
+  ]
+}
