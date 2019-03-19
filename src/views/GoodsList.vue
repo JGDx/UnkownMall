@@ -18,7 +18,7 @@
               <dl class="filter-price">
                 <dt>Price:</dt>
                 <dd><a href="javascript:void(0)" v-bind:class="{'cur':priceChecked=='all'}" @click="priceChecked='all'">All</a></dd>
-                <dd v-for="(price,index) in priceFilter" @click="priceChecked=index">
+                <dd v-for="(price,index) in priceFilter">
                   <a href="javascript:void(0)" @click="setPriceFilter(index)" v-bind:class="{'cur':priceChecked==index}">{{price.startPrice}} - {{price.endPrice}}</a>
                 </dd>
               </dl>
