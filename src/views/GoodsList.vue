@@ -17,7 +17,7 @@
             <div class="filter stopPop" id="filter" v-bind:class="{'filterby-show':filterBy}">
               <dl class="filter-price">
                 <dt>Price:</dt>
-                <dd><a href="javascript:void(0)" v-bind:class="{'cur':priceChecked=='all'}" @click="priceChecked='all'">All</a></dd>
+                <dd><a href="javascript:void(0)" v-bind:class="{'cur':priceChecked=='all'}" @click="setPriceAll">All</a></dd>
                 <dd v-for="(price,index) in priceFilter">
                   <a href="javascript:void(0)" @click="setPriceFilter(index)" v-bind:class="{'cur':priceChecked==index}">{{price.startPrice}} - {{price.endPrice}}</a>
                 </dd>
@@ -30,19 +30,20 @@
                 <ul>
                   <li v-for="(item,index) in goodsList">
                     <div class="pic">
-                      <a href="#"><img v-lazy="'/static/'+item.productImage" alt=""></a>
+                      <a href="#"><img  v-bind:src="'/static/'+item.productImage" alt=""></a>
                     </div>
                     <div class="main">
                       <div class="name">{{item.productName}}</div>
-                      <div class="price">{{item.salePrice }}</div>
+                      <div class="price">￥{{item.salePrice }}</div>
                       <div class="btn-area">
                         <a href="javascript:;" class="btn btn--m">加入购物车</a>
                       </div>
                     </div>
                   </li>
                 </ul>
-                <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10">
-                  加载中...
+                <div class="load-more" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="30">
+                  <img src="./../assets/loading-spinning-bubbles.svg" v-show="loading" >
+                </div>
               </div>
             </div>
           </div>
@@ -52,7 +53,13 @@
       <nav-footer></nav-footer>
     </div>
 </template>
-
+<style>
+  .load-more{
+    height:100px;
+    line-height:100px;
+    text-align: center;
+  }
+</style>
 <script>
   import '@/assets/css/base.css'
   import '@/assets/css/product.css'
@@ -68,7 +75,10 @@
           page:1,
           pageSize:8,
           sortBy:0,
-          busy:false,
+          busy:true,
+          priceGte:0,
+          priceLt:0,
+          loading:false,
           priceFilter:[
             {
               startPrice:'0.00',
@@ -98,25 +108,41 @@
           this.getGoodsList();
       },
       methods:{
-          getGoodsList(){
+          getGoodsList(flag){
             var param={
               page:this.page,
               pageSize:this.pageSize,
-              sort:this.sortFlag?1:-1
-            }
+              sort:this.sortFlag?1:-1,
+              priceGte:this.priceGte,
+              priceLt:this.priceLt
+            };
+            this.loading=true;
             axios.get("/goods",{
               params:param
             }).then((result)=>{
+              this.loading=false;
               var res=result.data;
-              this.goodsList=res.result.list;
+              if(res.status=="0"){
+                if(flag){
+                  this.goodsList=this.goodsList.concat(res.result.list);
+                  if(res.result.count==0){
+                    this.busy=true;
+                  }else{
+                    this.busy=false;
+                  }
+                }else{
+                  this.goodsList=res.result.list;
+                  this.busy=false;
+                }
+              }else{
+                this.goodsList=[];
+              }
             })
           },
           loadMore(){
-            this.busy = true;
             setTimeout(() => {
-              for (var i = 0, j = 10; i < j; i++) {
-              }
-              this.busy = false;
+              this.page++;
+              this.getGoodsList(true);
             }, 1000);
           },
           sortGoods(){
@@ -131,11 +157,38 @@
           },
           setPriceFilter(index){
             this.priceChecked=index;
+            this.setPriceLevel();
             this.closePop();
+          },
+          setPriceAll(){
+            this.priceChecked='all';
+            this.setPriceLevel();
           },
           closePop(){
             this.filterBy=false;
             this.overLayFlag=false;
+          },
+          setPriceLevel(){
+            this.page=1;
+            switch(this.priceChecked){
+              case 'all':
+                this.priceGte=0;
+                this.priceLt=0;
+                break;
+              case 0:
+                this.priceGte=0;
+                this.priceLt=500;
+                break;
+              case 1:
+                this.priceGte=500;
+                this.priceLt=1000;
+                break;
+              case 2:
+                this.priceGte=1000;
+                this.priceLt=2000;
+                break;
+            }
+            this.getGoodsList(false);
           }
       }
     }

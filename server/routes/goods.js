@@ -20,7 +20,19 @@ router.get("/",(req,res,next)=>{
   let pageSize=parseInt(req.param("pageSize"));
   let sort=req.param("sort");
   let skip=(page-1)*pageSize;
+  let priceGte=parseInt(req.param("priceGte"))
+  let priceLt=parseInt(req.param("priceLt"));
   let params={};
+  if(priceLt!=0&&priceLt!=NaN){
+    params={
+      salePrice:{
+        $gte:priceGte,
+        $lt:priceLt
+      }
+    }
+  }
+
+
   let goodsModel= Goods.find(params).skip(skip).limit(pageSize);
 
   goodsModel.sort({'salePrice':sort})
