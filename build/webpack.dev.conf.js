@@ -13,10 +13,10 @@ const portfinder = require('portfinder')
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 
-const express=require('express')
-const app=express()
-var  router=express.Router();
-var goodsData=require('./../static/mock/goods')
+// const express=require('express')
+// const app=express()
+// var  router=express.Router();
+// var goodsData=require('./../static/mock/goods')
 
 const devWebpackConfig = merge(baseWebpackConfig, {
   module: {
@@ -47,13 +47,13 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     quiet: true, // necessary for FriendlyErrorsPlugin
     watchOptions: {
       poll: config.dev.poll,
-    },
-    before(app){
-      router.get("/goods",(req,res)=>{
-        res.json(goodsData);
-      })
-      app.use(router)
     }
+    // before(app){
+    //   router.get("/goods",(req,res)=>{
+    //     res.json(goodsData);
+    //   })
+    //   app.use(router)
+    // }
   },
   plugins: [
     new webpack.DefinePlugin({

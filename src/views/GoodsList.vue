@@ -8,8 +8,8 @@
         <div class="container">
           <div class="filter-nav">
             <span class="sortby">Sort by:</span>
-            <a href="javascript:void(0)" class="default cur">Default</a>
-            <a href="javascript:void(0)" class="price">Price <svg class="icon icon-arrow-short"><use xlink:href="#icon-arrow-short"></use></svg></a>
+            <a href="javascript:void(0)" @click="sortBy=0" class="default" v-bind:class="{'cur':sortBy==0}">Default</a>
+            <a href="javascript:void(0)" @click="sortGoods" class="price" v-bind:class="{'cur':sortBy==1}">Price <svg class="icon icon-arrow-short"><use xlink:href="#icon-arrow-short"></use></svg></a>
             <a href="javascript:void(0)" class="filterby stopPop" @click="showFilterPop">Filter by</a>
           </div>
           <div class="accessory-result">
@@ -30,17 +30,19 @@
                 <ul>
                   <li v-for="(item,index) in goodsList">
                     <div class="pic">
-                      <a href="#"><img v-lazy="'/static/'+item.productImg" alt=""></a>
+                      <a href="#"><img v-lazy="'/static/'+item.productImage" alt=""></a>
                     </div>
                     <div class="main">
                       <div class="name">{{item.productName}}</div>
-                      <div class="price">{{item.productPrice }}</div>
+                      <div class="price">{{item.salePrice }}</div>
                       <div class="btn-area">
                         <a href="javascript:;" class="btn btn--m">加入购物车</a>
                       </div>
                     </div>
                   </li>
                 </ul>
+                <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10">
+                  加载中...
               </div>
             </div>
           </div>
@@ -62,6 +64,11 @@
       data(){
         return{
           goodsList:[],
+          sortFlag:true,
+          page:1,
+          pageSize:8,
+          sortBy:0,
+          busy:false,
           priceFilter:[
             {
               startPrice:'0.00',
@@ -92,10 +99,31 @@
       },
       methods:{
           getGoodsList(){
-            axios.get("/goods").then((result)=>{
+            var param={
+              page:this.page,
+              pageSize:this.pageSize,
+              sort:this.sortFlag?1:-1
+            }
+            axios.get("/goods",{
+              params:param
+            }).then((result)=>{
               var res=result.data;
-              this.goodsList=res.result;
+              this.goodsList=res.result.list;
             })
+          },
+          loadMore(){
+            this.busy = true;
+            setTimeout(() => {
+              for (var i = 0, j = 10; i < j; i++) {
+              }
+              this.busy = false;
+            }, 1000);
+          },
+          sortGoods(){
+            this.sortFlag=!this.sortFlag;
+            this.page=1;
+            this.sortBy=1;
+            this.getGoodsList();
           },
           showFilterPop(){
             this.filterBy=true;
