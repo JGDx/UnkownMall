@@ -36,7 +36,7 @@
                       <div class="name">{{item.productName}}</div>
                       <div class="price">￥{{item.salePrice }}</div>
                       <div class="btn-area">
-                        <a href="javascript:;" class="btn btn--m">加入购物车</a>
+                        <a href="javascript:;" class="btn btn--m" @click="addCart(item.productId)">加入购物车</a>
                       </div>
                     </div>
                   </li>
@@ -71,7 +71,7 @@
       data(){
         return{
           goodsList:[],
-          sortFlag:true,
+          sortFlag:1,
           page:1,
           pageSize:8,
           sortBy:0,
@@ -112,7 +112,7 @@
             var param={
               page:this.page,
               pageSize:this.pageSize,
-              sort:this.sortFlag?1:-1,
+              sort:this.sortFlag,
               priceGte:this.priceGte,
               priceLt:this.priceLt
             };
@@ -146,7 +146,7 @@
             }, 1000);
           },
           sortGoods(){
-            this.sortFlag=!this.sortFlag;
+            this.sortFlag=this.sortFlag*-1;
             this.page=1;
             this.sortBy=1;
             this.getGoodsList();
@@ -189,6 +189,18 @@
                 break;
             }
             this.getGoodsList(false);
+          },
+          addCart(productId){
+              axios.post('/goods/addCart',{
+                productId:productId
+              }).then((res)=>{
+                var result=res.data;
+                if(result.status=="0"){
+                  alert("加入成功");
+                }else{
+                  alert("msg:"+result.result);
+                }
+              })
           }
       }
     }
