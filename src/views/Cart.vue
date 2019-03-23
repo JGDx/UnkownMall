@@ -44,9 +44,9 @@
                   <div class="item-quantity">
                     <div class="select-self select-self-open">
                       <div class="select-self-area">
-                        <a class="input-sub">-</a>
+                        <a href="javascript:;" class="input-sub">-</a>
                         <span class="select-ipt">{{item.productNum}}</span>
-                        <a class="input-add">+</a>
+                        <a href="javascript:;" class="input-add">+</a>
                       </div>
                     </div>
                   </div>
@@ -56,7 +56,7 @@
                 </div>
                 <div class="cart-tab-5">
                   <div class="cart-item-opration">
-                    <a href="javascript:;" class="item-edit-btn">
+                    <a href="javascript:;" class="item-edit-btn" @click="delCartConfirm(item.productId)">
                       <svg class="icon icon-del">
                         <use xlink:href="#icon-del"></use>
                       </svg>
@@ -91,6 +91,13 @@
         </div>
       </div>
     </div>
+    <Modal v-bind:mdShow="modalConfirm" @close="closeModal">
+      <p slot="message">你确定要删除此条数据吗？</p>
+      <div slot="btnGroup">
+        <a href="javascript:;" class="btn btn--m" @click="delCart">确认</a>
+        <a href="javascript:;" class="btn btn--m" @click="modalConfirm=false">关闭</a>
+      </div>
+    </Modal>
     <nav-footer></nav-footer>
   </div>
 </template>
@@ -135,7 +142,9 @@
     export default {
         data(){
           return{
-            cartList:[]
+            cartList:[],
+            modalConfirm:false,
+            productId:''
           }
         },
         name: "Cart",
@@ -155,8 +164,26 @@
                 if(res.status=='0'){
                   this.cartList=res.result;
                 }
-              })
-            }
+              });
+            },
+          delCartConfirm(productId){
+              this.productId=productId;
+              this.modalConfirm=true;
+          },
+          delCart(){
+              axios.post('/users/cartDel',{
+                productId:this.productId
+              }).then((response)=>{
+                let res=response.data;
+                if(res.status=='0'){
+                  this.modalConfirm=false;
+                  this.init();
+                }
+              });
+          },
+          closeModal(){
+              this.modalConfirm=false;
+          }
         }
     }
 </script>

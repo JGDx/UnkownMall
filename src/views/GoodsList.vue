@@ -61,7 +61,7 @@
           请先登陆，否则无法加入到购物车中！
         </p>
         <div slot="btnGroup">
-          <a class="btn btn--m" @click="closeModal">关闭</a>
+          <a class="btn btn--m" href="javascript:;" @click="closeModal">关闭</a>
         </div>
       </modal>
       <modal v-bind:mdShow="mdShowCart" v-on:close="closeModalCart">
@@ -72,8 +72,8 @@
           <span>加入购物车成功!!</span>
         </p>
         <div slot="btnGroup">
-          <a class="btn btn--m" @click="closeModalCart">继续购物</a>
-          <router-link href="javascript;;" class="btn btn--m" to="/cart">查看购物车</router-link>
+          <a href="javascript:;" class="btn btn--m" @click="closeModalCart">继续购物</a>
+          <router-link class="btn btn--m" to="/cart">查看购物车</router-link>
         </div>
       </modal>
       <nav-footer></nav-footer>
