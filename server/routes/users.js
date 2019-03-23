@@ -185,4 +185,24 @@ router.post("/cartEditCheckAll",(req,res,next)=>{
   })
 })
 
+//查询用户地址接口
+router.get("/addressList",(req,res,next)=>{
+  var userId=req.cookies.userId;
+  User.findOne({userId:userId},(err,user)=>{
+    if(err){
+      res.json({
+        status:"1",
+        msg:err.message,
+        result:''
+      })
+    }else{
+      res.json({
+        status:"0",
+        msg:'',
+        result:user.addressList
+      })
+    }
+  })
+})
+
 module.exports = router;

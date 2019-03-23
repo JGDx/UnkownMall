@@ -25,11 +25,11 @@
       <div class="addr-list-wrap">
         <div class="addr-list">
           <ul>
-            <li>
+            <li v-for="item in addressList">
               <dl>
-                <dt>XXX</dt>
-                <dd class="address">朝阳公园</dd>
-                <dd class="tel">10000000000</dd>
+                <dt>{{item.userName}}</dt>
+                <dd class="address">{{item.streetName}}</dd>
+                <dd class="tel">{{item.tel}}</dd>
               </dl>
               <div class="addr-opration addr-del">
                 <a href="javascript:;" class="addr-del-btn">
@@ -37,9 +37,9 @@
                 </a>
               </div>
               <div class="addr-opration addr-set-default">
-                <a href="javascript:;" class="addr-set-default-btn"><i>Set default</i></a>
+                <a href="javascript:;" class="addr-set-default-btn"><i>设置为默认</i></a>
               </div>
-              <div class="addr-opration addr-default">Default address</div>
+              <div class="addr-opration addr-default" v-if="item.isDefault==true">默认地址</div>
             </li>
             <li class="addr-new">
               <div class="add-new-inner">
@@ -103,11 +103,30 @@
   import axios from 'axios'
     export default {
         name: "Address",
+      data(){
+          return{
+            addressList:[]
+          }
+      },
       components:{
         NavHeader,
         NavFooter,
         NavBread,
         Modal
+      },
+      mounted(){
+          this.init();
+      }
+      ,
+      methods:{
+          init(){
+            axios.get("/users/addressList").then((response)=>{
+              let res=response.data;
+              if(res.status=='0'){
+                this.addressList=res.result;
+              }
+            })
+          }
       }
     }
 </script>
