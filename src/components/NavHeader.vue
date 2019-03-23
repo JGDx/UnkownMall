@@ -30,8 +30,8 @@
           <!--<a href="/" class="navbar-link">我的账户</a>-->
           <span class="navbar-link"></span>
           <span v-text="nickName" v-if="nickName"></span>
-          <a href="javascript:void(0)" class="navbar-link" @click="loginModelFlag=true"  v-if="!nickName">Login</a>
-          <a href="javascript:void(0)" class="navbar-link" @click="logOut"  v-if="nickName">Logout</a>
+          <a href="javascript:void(0)" class="navbar-link" @click="loginModelFlag=true"  v-if="!nickName">登陆</a>
+          <a href="javascript:void(0)" class="navbar-link" @click="logOut"  v-if="nickName">退出</a>
           <div class="navbar-cart-container">
             <span class="navbar-cart-count"></span>
             <a class="navbar-link navbar-cart-link" href="/#/cart">
@@ -46,7 +46,7 @@
     <div v-bind:class="{'md-show':loginModelFlag}" class="md-modal modal-msg md-modal-transition">
       <div class="md-modal-inner">
         <div class="md-top">
-          <div class="md-title">Login in</div>
+          <div class="md-title">登陆</div>
           <button class="md-close" @click="loginModelFlag=false">Close</button>
         </div>
         <div class="md-content">
@@ -57,11 +57,11 @@
             <ul>
               <li class="regi_form_input">
                 <i class="icon IconPeople"></i>
-                <input type="text" tabindex="1" name="loginname" v-model="userName" class="regi_login_input">
+                <input placeholder="请输入用户名" type="text" tabindex="1" name="loginname" v-model="userName" class="regi_login_input">
               </li>
               <li class="regi_form_input noMargin">
                 <i class="icon IconPwd"></i>
-                <input type="password" tabindex="2" name="password"  v-model="userPwd" class="regi_login_input">
+                <input placeholder="请输入密码"  type="password" tabindex="2" name="password"  v-model="userPwd" class="regi_login_input" @keyup.enter="login">
               </li>
             </ul>
           </div>

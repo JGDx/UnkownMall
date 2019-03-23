@@ -2,7 +2,7 @@
   <div class="nav-breadcrumb-wrap">
     <div class="container">
       <nav class="nav-breadcrumb">
-        <a href="/">Home</a>
+        <a href="/">主页</a>
         <!--<span>Goods</span>-->
         <slot name="bread"></slot>
       </nav>

@@ -2,7 +2,7 @@
     <div>
       <nav-header></nav-header>
       <nav-bread>
-        <span slot="bread">Goods</span>
+        <span slot="bread">商品</span>
       </nav-bread>
       <div class="accessory-result-page accessory-page">
         <div class="container">
@@ -73,7 +73,7 @@
         </p>
         <div slot="btnGroup">
           <a class="btn btn--m" @click="closeModalCart">继续购物</a>
-          <router-link class="btn btn--m" to="/cart">查看购物车</router-link>
+          <router-link href="javascript;;" class="btn btn--m" to="/cart">查看购物车</router-link>
         </div>
       </modal>
       <nav-footer></nav-footer>

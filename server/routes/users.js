@@ -62,9 +62,8 @@ router.post("/logout",(req,res,next)=>{
   })
 });
 
-//检查登陆
+//获取用户名
 router.get("/checkLogin",(req,res,next)=>{
-  if(req.cookies.userId){
     res.json({
       status:"0",
       msg:"",
@@ -72,13 +71,28 @@ router.get("/checkLogin",(req,res,next)=>{
         userName:req.cookies.userName
       }
     })
-  }else{
-    res.json({
-      status:"1",
-      msg:"未登陆",
-      result:""
-    })
-  }
 })
+
+//查询当前用户的购物车
+router.get("/cartList",(req,res,next)=>{
+  var userId=req.cookies.userId;
+  User.findOne({userId:userId},(err,doc)=>{
+    if(err){
+      res.json({
+        status:"1",
+        msg:err.mesage,
+        result:''
+      })
+    }else{
+      if(doc){
+        res.json({
+          status:"0",
+          msg:'',
+          result:doc.cartList
+        })
+      }
+    }
+  })
+});
 
 module.exports = router;
