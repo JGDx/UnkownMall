@@ -149,4 +149,40 @@ router.post("/cartEdit",(req,res,next)=>{
   })
 });
 
+//全选或全不选
+router.post("/cartEditCheckAll",(req,res,next)=>{
+  let userId=req.cookies.userId;
+  let checkAll=req.body.checkAll?'1':'0';
+  User.findOne({userId:userId},(err,user)=>{
+    if(err){
+      res.json({
+        status:"1",
+        msg:err.message,
+        result:''
+      })
+    }else{
+      if(user){
+        user.cartList.forEach((item)=>{
+          item.checked=checkAll;
+        })
+        user.save((err1,doc)=>{
+          if(err1){
+            res.json({
+              status:"1",
+              msg:err.message,
+              result:''
+            })
+          }else{
+            res.json({
+              status:"0",
+              msg:'',
+              result:'suc'
+            })
+          }
+        })
+      }
+    }
+  })
+})
+
 module.exports = router;
