@@ -9,7 +9,13 @@
           <div class="filter-nav">
             <span class="sortby">Sort by:</span>
             <a href="javascript:void(0)" @click="sortBy=0" class="default" v-bind:class="{'cur':sortBy==0}">Default</a>
-            <a href="javascript:void(0)" @click="sortGoods" class="price" v-bind:class="{'cur':sortBy==1}">Price <svg class="icon icon-arrow-short"><use xlink:href="#icon-arrow-short"></use></svg></a>
+            <a href="javascript:void(0)" @click="sortGoods" class="price" v-bind:class="{'cur':sortBy==1}">
+              Price
+              <!--<svg class="icon icon-arrow-short" v-bind:class="{'sort-up':sortFlag==1}">-->
+                <!--<use xlink:href="#icon-arrow-short"></use>-->
+              <!--</svg>-->
+              <img src="/static/loading-svg/arrow.svg" class="icon icon-arrow-short" v-bind:class="{'sort-up':sortFlag==-1}">
+            </a>
             <a href="javascript:void(0)" class="filterby stopPop" @click="showFilterPop">Filter by</a>
           </div>
           <div class="accessory-result">
@@ -50,6 +56,26 @@
         </div>
       </div>
       <div class="md-overlay" v-show="overLayFlag" @click="closePop"></div>
+      <modal v-bind:mdShow="mdShow" v-on:close="closeModal">
+        <p slot="message">
+          请先登陆，否则无法加入到购物车中！
+        </p>
+        <div slot="btnGroup">
+          <a class="btn btn--m" @click="closeModal">关闭</a>
+        </div>
+      </modal>
+      <modal v-bind:mdShow="mdShowCart" v-on:close="closeModalCart">
+        <p slot="message">
+          <svg style="width:50px;height:50px;margin-right:20px;">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-status-ok"></use>
+          </svg>
+          <span>加入购物车成功!!</span>
+        </p>
+        <div slot="btnGroup">
+          <a class="btn btn--m" @click="closeModalCart">继续购物</a>
+          <router-link class="btn btn--m" to="/cart">查看购物车</router-link>
+        </div>
+      </modal>
       <nav-footer></nav-footer>
     </div>
 </template>
@@ -59,6 +85,17 @@
     line-height:100px;
     text-align: center;
   }
+  .sort-up{
+    transform:rotate(180deg);
+    transition:all .3s ease-out;
+  }
+  .icon-arrow-short{
+    transition:all .3s ease-out;
+  }
+  .btn:hover{
+    background-color:#FFE5E6;
+    transition:all .3s ease-out;
+  }
 </style>
 <script>
   import '@/assets/css/base.css'
@@ -66,6 +103,7 @@
   import NavHeader from '@/components/NavHeader'
   import NavFooter from '@/components/NavFooter'
   import NavBread from '@/components/NavBread'
+  import Modal from '@/components/Modal'
   import axios from 'axios'
     export default {
       data(){
@@ -79,6 +117,8 @@
           priceGte:0,
           priceLt:0,
           loading:false,
+          mdShow:false,
+          mdShowCart:false,
           priceFilter:[
             {
               startPrice:'0.00',
@@ -102,7 +142,8 @@
       components:{
         NavHeader,
         NavFooter,
-        NavBread
+        NavBread,
+        Modal
       },
       mounted:function(){
           this.getGoodsList();
@@ -117,7 +158,7 @@
               priceLt:this.priceLt
             };
             this.loading=true;
-            axios.get("/goods",{
+            axios.get("/goods/list",{
               params:param
             }).then((result)=>{
               this.loading=false;
@@ -196,12 +237,18 @@
               }).then((res)=>{
                 var result=res.data;
                 if(result.status=="0"){
-                  alert("加入成功");
+                  this.mdShowCart=true;
                 }else{
-                  alert("msg:"+result.result);
+                  this.mdShow=true;
                 }
               })
-          }
+          },
+        closeModal(){
+            this.mdShow=false;
+        },
+        closeModalCart(){
+            this.mdShowCart=false;
+        }
       }
     }
 
