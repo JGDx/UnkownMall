@@ -44,9 +44,9 @@
                   <div class="item-quantity">
                     <div class="select-self select-self-open">
                       <div class="select-self-area">
-                        <a href="javascript:;" class="input-sub">-</a>
+                        <a href="javascript:;" @click="editCart('minu',item)" class="input-sub">-</a>
                         <span class="select-ipt">{{item.productNum}}</span>
-                        <a href="javascript:;" class="input-add">+</a>
+                        <a href="javascript:;" @click="editCart('add',item)" class="input-add">+</a>
                       </div>
                     </div>
                   </div>
@@ -183,8 +183,36 @@
           },
           closeModal(){
               this.modalConfirm=false;
+          },
+          editCart(flag,item){
+            if(flag=="add"){
+              item.productNum++;
+            }else if(flag=="minus"){
+              if(item.productNum<=1)
+              {
+                return;
+              }else {
+                item.productNum--;
+              }
+            }else{
+              item.checked=item.checked=="1"?"-1":"1";
+            }
+            axios.post('/users/cartEdit',{
+              productId:item.productId,
+              productNum:item.productNum,
+              checked:item.checked
+            }).then((response)=>{
+              let res=response.data;
+              if(res.status=='0'){
+                this.modalConfirm=false;
+                this.init();
+              }else{
+                console.log("err:"+res.msg);
+              }
+            })
           }
-        }
+        },
+
     }
 </script>
 

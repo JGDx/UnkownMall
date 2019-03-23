@@ -75,7 +75,7 @@ router.get("/checkLogin",(req,res,next)=>{
 
 //查询当前用户的购物车
 router.get("/cartList",(req,res,next)=>{
-  var userId=req.cookies.userId;
+  let userId=req.cookies.userId;
   User.findOne({userId:userId},(err,doc)=>{
     if(err){
       res.json({
@@ -97,11 +97,10 @@ router.get("/cartList",(req,res,next)=>{
 
 //购物车删除
 router.post('/cartDel',(req,res,next)=>{
-  var userId=req.cookies.userId;
-  productId=req.body.productId;
+  let userId=req.cookies.userId;
+  let productId=req.body.productId;
   User.update({
-    userId:userId
-  },{
+    userId:userId},{
       $pull:{
         'cartList':{
           'productId':productId
@@ -123,4 +122,31 @@ router.post('/cartDel',(req,res,next)=>{
     }
   });
 });
+
+//商品数量修改
+router.post("/cartEdit",(req,res,next)=>{
+  let userId=req.cookies.userId;
+  let productId=req.body.productId;
+  let productNum=req.body.productNum;
+  let checked=req.body.checked;
+  User.update({"userId":userId,'cartList.productId':productId},{
+    "cartList.$.productNum":productNum,
+    "cartList.$.checked":checked
+  },(err,doc)=>{
+    if(err){
+      res.json({
+        status:"1",
+        msg:err.message,
+        result:''
+      })
+    }else{
+      res.json({
+        status:"0",
+        msg:'',
+        result:'suc'
+      })
+    }
+  })
+});
+
 module.exports = router;
