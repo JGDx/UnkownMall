@@ -84,7 +84,7 @@
                 总价: <span class="total-price">{{totalPrice | currency('￥')}}</span>
               </div>
               <div class="btn-wrap">
-                <a class="btn btn--red">结算</a>
+                <a class="btn btn--red" v-bind:class="{'btn--dis':checkedCount==0}" @click='checkOut'>结算</a>
               </div>
             </div>
           </div>
@@ -139,7 +139,6 @@
   import NavBread from '@/components/NavBread'
   import Modal from '@/components/Modal'
   import axios from 'axios'
-  import {currency} from '@/util/currency'
     export default {
         data(){
           return{
@@ -246,6 +245,13 @@
                 this.init();
               }
             })
+          },
+          checkOut(){
+              if(this.checkedCount>0){
+                this.$router.push({
+                  path:"/address"
+                })
+              }
           }
         },
 

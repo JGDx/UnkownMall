@@ -7,23 +7,23 @@
       <div class="accessory-result-page accessory-page">
         <div class="container">
           <div class="filter-nav">
-            <span class="sortby">Sort by:</span>
-            <a href="javascript:void(0)" @click="sortBy=0" class="default" v-bind:class="{'cur':sortBy==0}">Default</a>
+            <span class="sortby">排序:</span>
+            <a href="javascript:void(0)" @click="sortBy=0" class="default" v-bind:class="{'cur':sortBy==0}">默认</a>
             <a href="javascript:void(0)" @click="sortGoods" class="price" v-bind:class="{'cur':sortBy==1}">
-              Price
+              价格
               <!--<svg class="icon icon-arrow-short" v-bind:class="{'sort-up':sortFlag==1}">-->
                 <!--<use xlink:href="#icon-arrow-short"></use>-->
               <!--</svg>-->
               <img src="/static/loading-svg/arrow.svg" class="icon icon-arrow-short" v-bind:class="{'sort-up':sortFlag==-1}">
             </a>
-            <a href="javascript:void(0)" class="filterby stopPop" @click="showFilterPop">Filter by</a>
+            <a href="javascript:void(0)" class="filterby stopPop" @click="showFilterPop">过滤</a>
           </div>
           <div class="accessory-result">
             <!-- filter -->
             <div class="filter stopPop" id="filter" v-bind:class="{'filterby-show':filterBy}">
               <dl class="filter-price">
-                <dt>Price:</dt>
-                <dd><a href="javascript:void(0)" v-bind:class="{'cur':priceChecked=='all'}" @click="setPriceAll">All</a></dd>
+                <dt>价格:</dt>
+                <dd><a href="javascript:void(0)" v-bind:class="{'cur':priceChecked=='all'}" @click="setPriceAll">全部</a></dd>
                 <dd v-for="(price,index) in priceFilter">
                   <a href="javascript:void(0)" @click="setPriceFilter(index)" v-bind:class="{'cur':priceChecked==index}">{{price.startPrice}} - {{price.endPrice}}</a>
                 </dd>
