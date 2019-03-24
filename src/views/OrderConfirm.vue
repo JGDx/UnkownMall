@@ -2,7 +2,7 @@
     <div>
       <nav-header></nav-header>
       <nav-bread>
-        <span slot="bread">订单确认</span>
+        <span slot="bread">查看您的订单</span>
       </nav-bread>
       <div class="container">
         <div class="checkout-order">
@@ -168,7 +168,6 @@
           })
         }
       }
-
     }
 </script>
 

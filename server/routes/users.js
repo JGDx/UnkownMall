@@ -385,4 +385,52 @@ router.post('/payMent',(req,res,next)=>{
   })
 })
 
+//查询订单详情接口
+router.get("/orderDetail",(req,res,next)=>{
+  var userId=req.cookies.userId;
+  var orderId=req.param("orderId");
+  User.findOne({userId:userId},(err,userInfo)=>{
+    if(err){
+      res.json({
+        status:'1',
+        msg:err.message,
+        result:''
+      })
+    }else{
+      var orderList=userInfo.orderList;
+      if(orderList.length>0){
+        var orderTotal=0;
+        orderList.forEach((item)=>{
+          if(item.orderId==orderId){
+            orderTotal=item.orderTotal;
+          }
+        });
+        if(orderTotal){
+          res.json({
+            status:'0',
+            msg:'',
+            result:{
+              orderId:orderId,
+              orderTotal:orderTotal
+            }
+          })
+        }else{
+          res.json({
+            status:'120002',
+            msg:'无此订单',
+            result:''
+          })
+        }
+      }else{
+        res.json({
+          status:'120001',
+          msg:"当前用户未创建订单",
+          result:''
+        })
+      }
+    }
+  })
+})
+
+
 module.exports = router;
