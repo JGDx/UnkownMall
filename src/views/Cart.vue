@@ -104,10 +104,10 @@
 
 <style>
   .btn--red{
-    width:100px;
-    font-size:20px;
-    padding-left:15px;
-  }
+     width:100px;
+     font-size:20px;
+     padding-left:15px;
+   }
   .input-sub,.input-add{
     min-width: 40px;
     height: 100%;
