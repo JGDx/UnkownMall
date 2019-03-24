@@ -205,4 +205,119 @@ router.get("/addressList",(req,res,next)=>{
   })
 })
 
+//设置默认地址接kkkk
+router.post("/setDefault",(req,res,next)=>{
+  var userId=req.cookies.userId;
+  var addressId=req.body.addressId;
+  if(!addressId){
+    res.json({
+      status:"1003",
+      msg:"addressId is null",
+      result:''
+    })
+  }else
+  {
+    User.findOne({userId:userId},(err,user)=>{
+      if(err){
+        res.json({
+          status:"1",
+          msg:err.message,
+          result:''
+        })
+      }else{
+        var addressList=user.addressList;
+        addressList.forEach((item)=>{
+          if(item.addressId==addressId){
+            item.isDefault=true;
+          }else{
+            item.isDefault=false;
+          }
+        });
+        user.save((err1,doc1)=>{
+          if(err1){
+            res.json({
+              status:"1",
+              msg:err.message,
+              result:''
+            })
+          }else{
+            res.json({
+              status:"0",
+              msg:'',
+              result:'suc'
+            })
+          }
+        })
+
+      }
+    })
+  }
+})
+
+//删除地址接口
+router.post("/delAddress",(req,res,next)=>{
+  var userId=req.cookies.userId;
+  var addressId=req.body.addressId;
+  User.update({
+    userId:userId
+  },{
+    $pull:{
+      'addressList':{
+        addressId:addressId
+      }
+    }
+  },(err,doc)=>{
+    if(err){
+      res.json({
+        status:"1",
+        msg:err.message,
+        result:''
+      })
+    }else{
+      res.json({
+        status:'0',
+        msg:'',
+        result:'suc'
+      })
+    }
+  })
+})
+
+//增加地址接口
+router.post("/addAddress",(req,res,next)=>{
+  var userId=req.cookies.userId;
+  var addressId=req.body.addressId;
+  var userName=req.body.userName;
+  var streetName=req.body.streetName;
+  var postCode=req.body.postCode;
+  var tel=req.body.tel;
+  User.update({
+    userId:userId
+  },{
+    $push:{
+      addressList:{
+        addressId:addressId,
+        userName:userName,
+        streetName:streetName,
+        postCode:postCode,
+        tel:tel
+      }
+    }
+  },(err,doc)=>{
+    if(err){
+      res.json({
+        status:"1",
+        msg:err.message,
+        result:''
+      })
+    }else{
+      res.json({
+        status:'0',
+        msg:'',
+        result:'suc'
+      })
+    }
+  })
+});
+
 module.exports = router;

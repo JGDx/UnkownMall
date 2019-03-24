@@ -56,7 +56,9 @@
     <div class="navbar">
       <div class="navbar-left-container">
         <a href="/">
-          <img class="navbar-brand-logo" src="/static/logo.jpg"></a>
+          <img class="navbar-brand-logo" src="/static/dao.png">
+          <span class="navbar-brand-title">道隐无名商店</span>
+        </a>
       </div>
       <div class="navbar-right-container" style="display: flex;">
         <div class="navbar-menu-container">
@@ -131,7 +133,14 @@
     margin-left: -20px;
   }
   .navbar-brand-logo {
-    /*width: 120px;*/
+    width: 60px;
+    margin-top:20px;
+  }
+  .navbar-brand-title{
+    font-family: "汉仪尚巍手书W";
+    font-size:30px;
+    position:relative;
+    top:-20px;
   }
   .header a, .footer a {
     color: #666;
@@ -180,6 +189,7 @@
     height: 25px;
     transform: scaleX(-1);
   }
+
 </style>
 <script>
     import '../assets/css/login.css'
