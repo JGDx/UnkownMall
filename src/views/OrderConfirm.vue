@@ -94,10 +94,11 @@
 
           <div class="order-foot-wrap">
             <div class="prev-btn-wrap">
-              <button class="btn btn--m">上一步</button>
+              <router-link class="btn btn--m order-btn-red" to="/address">上一步</router-link>
             </div>
             <div class="next-btn-wrap">
-              <button class="btn btn--m btn--red order-btn-red">继续付款</button>
+              <!--<router-link class="btn btn&#45;&#45;m btn&#45;&#45;red order-btn-red" to="/" @click="payMent">继续付款</router-link>-->
+              <button class="btn btn--m btn--red order-btn-red" @click="payMent">继续付款</button>
             </div>
           </div>
         </div>
@@ -107,7 +108,7 @@
 </template>
 <style>
   .order-btn-red{
-    font-size:20px;
+    font-size:20px !important;
     width:170px;
     height:50px;
   }
@@ -151,7 +152,21 @@
                 })
               }
             })
-          }
+          },
+        payMent(){
+          var addressId=this.$route.query.addressId;
+          axios.post('/users/payMent',{
+            addressId:addressId,
+            orderTotal:this.orderTotal
+          }).then((response)=>{
+            let res=response.data;
+            if(res.status=='0'){
+              this.$router.push({
+                path:'/orderSuccess?orderId='+res.result.orderId
+              })
+            }
+          })
+        }
       }
 
     }
