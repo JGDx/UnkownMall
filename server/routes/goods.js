@@ -16,25 +16,40 @@ mongoose.connection.on("disconnected",()=>{
 });
 
 //查询商品列表
-router.get("/list",(req,res,next)=>{
-  let page=parseInt(req.param("page"));
-  let pageSize=parseInt(req.param("pageSize"));
-  let sort=req.param("sort");
-  let skip=(page-1)*pageSize;
-  let priceGte=parseInt(req.param("priceGte"))
-  let priceLt=parseInt(req.param("priceLt"));
-  let params={};
-  if(priceLt!=0&&priceLt!=NaN){
+router.get("/list",(req,res,next)=> {
+  let page = parseInt(req.param("page"));
+  let pageSize = parseInt(req.param("pageSize"));
+  let sort = req.param("sort");
+  let searchContent=req.param("searchContent");
+  let skip = (page - 1) * pageSize;
+  let priceGte = parseInt(req.param("priceGte"));
+  let priceLt = parseInt(req.param("priceLt"));
+  let params = {};
+
+  if (priceLt != 0 && priceLt != NaN) {
+    params = {
+      $and:[
+        {
+          salePrice: {
+            $gte: priceGte,
+            $lt: priceLt
+          }
+        },
+        {
+          productName: {$regex: searchContent}
+        }
+      ]
+    };
+  }else{
     params={
-      salePrice:{
-        $gte:priceGte,
-        $lt:priceLt
-      }
-    }
+      productName:{$regex:searchContent}
+    };
   }
 
-  let goodsModel= Goods.find(params).skip(skip).limit(pageSize);
-  goodsModel.sort({'salePrice':sort})
+  let goodsModel = Goods.find(params).skip(skip).limit(pageSize);
+  if (sort != 0) {
+    goodsModel.sort({'salePrice': sort})
+  }
   goodsModel.exec((err,doc)=>{
     if(err){
       res.json({
@@ -56,7 +71,7 @@ router.get("/list",(req,res,next)=>{
 
 //加入到购物车
 router.post("/addCart",(req,res,next)=>{
-  var userId="100000077";
+  var userId=req.cookies.userId;
   var productId=req.body.productId;
   var User=require('./../models/user');
   User.findOne({userId:userId},(err,userDoc)=>{               //查找用户

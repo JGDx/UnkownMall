@@ -10,6 +10,14 @@ router.get('/test', function(req, res, next) {
   res.send('test');
 });
 
+function getId(code){
+  var platform=code;
+  var r1=Math.floor(Math.random()*10);
+  var r2=Math.floor(Math.random()*10);
+  var sysDate=new Date().Format('yyyyMMddhhmmss');
+  return platform+r1+sysDate+r2;
+}
+
 //登陆接口
 router.post('/login',(req,res,next)=>{
   let param={
@@ -32,6 +40,8 @@ router.post('/login',(req,res,next)=>{
           path:'/',
           maxAge:1000*60*60
         });
+        // req.session.userId=doc.userId;
+        // req.session.userName=doc.userName;
         // req.session.user=doc;
         res.json({
           status:"0",
@@ -63,16 +73,17 @@ router.post("/logout",(req,res,next)=>{
   })
 });
 
-//获取用户名
+//获取用户名addAddress
 router.get("/checkLogin",(req,res,next)=>{
     res.json({
       status:"0",
       msg:"",
       result:{
         userName:req.cookies.userName
+        // userName:req.session.userName
       }
     })
-})
+});
 
 //检测用户名是否存在
 router.post("/checkRegUserName",(req,res,next)=>{
@@ -385,7 +396,7 @@ router.post("/addAddress",(req,res,next)=>{
   },{
     $push:{
       addressList:{
-        addressId:addressId,
+        addressId:getId("433"),
         userName:userName,
         streetName:streetName,
         postCode:postCode,

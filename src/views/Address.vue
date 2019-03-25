@@ -53,7 +53,7 @@
         </div>
 
         <div class="shipping-addr-more">
-          <a class="addr-more-btn up-down-btn" href="javascript:;" @click="expand" v-bind:class="{'open':limit>3}">
+          <a class="addr-more-btn up-down-btn" href="javascript:;" @click="expand" v-bind:class="{'open':pullDown}">
             更多
             <i class="i-up-down">
               <i class="i-up-down-l"></i>
@@ -75,7 +75,7 @@
           <ul>
             <li class="check">
               <div class="name">快递运输</div>
-              <div class="price">免费</div>
+              <div class="price">￥100</div>
               <div class="shipping-tips">
                 <p>发货后，订单会在1-7日内送达收货地址</p>
               </div>
@@ -161,7 +161,6 @@
         name: "Address",
       data(){
           return{
-            limit:3,
             addressList:[],
             isMdShow:false,
             isMdShowIns:false,
@@ -171,7 +170,8 @@
             addStreetName:'',
             addPostCode:'',
             addTel:'',
-            errorTip:false
+            errorTip:false,
+            pullDown:false
           }
       },
       components:{
@@ -186,6 +186,13 @@
       computed:{
         addressListFilter(){
           return this.addressList.slice(0,this.limit);
+        },
+        limit(){
+          if(this.pullDown){
+            return this.addressList.length;
+          }else{
+            return 3;
+          }
         }
       }
       ,
@@ -194,17 +201,19 @@
             axios.get("/users/addressList").then((response)=>{
               let res=response.data;
               if(res.status=='0'){
-                this.addressList=res.result;
-                this.selectedAddrId=this.addressList[0].addressId;
+                  this.addressList=res.result;
+                  if(this.addressList.addressId)    //如果有地址才可以取第一位id
+                    this.selectedAddrId=this.addressList[0].addressId;
               }
             })
           },
         expand(){
-            if(this.limit==3){
-              this.limit=this.addressList.length;
-            }else{
-              this.limit=3;
-            }
+            // if(this.limit==3){
+            //   this.limit=this.addressList.length;
+            // }else{
+            //   this.limit=3;
+            // }
+          this.pullDown=!this.pullDown;
         },
         setCheck(item){
             this.selectedAddrId=item.addressId;
@@ -231,7 +240,7 @@
             this.errorTip=false;
             this.addUserName="";
             this.addPostCode="";
-            this.addPostCode="";
+            this.addTel="";
             this.addStreetName="";
         },
         showModal(addressId){
@@ -257,9 +266,7 @@
         addAddress(){
             if(this.addUserName&&this.addPostCode&&this.addTel&&this.addStreetName){
               this.errorTip=false;
-              var addressId=parseInt(this.addressList[this.addressList.length-1].addressId)+1;
               axios.post("/users/addAddress",{
-                addressId:addressId,
                 userName:this.addUserName,
                 streetName:this.addStreetName,
                 postCode:this.addPostCode,

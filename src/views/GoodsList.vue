@@ -7,14 +7,17 @@
       <div class="accessory-result-page accessory-page">
         <div class="container">
           <div class="filter-nav">
+            <div style="float:left">
+              <input type="text" class="search" v-model="inputContent" @keyup.enter="search" ><a href="javascript:;" class="btn btn--white" @click="search" >搜索</a>
+            </div>
             <span class="sortby">排序:</span>
-            <a href="javascript:void(0)" @click="sortBy=0" class="default" v-bind:class="{'cur':sortBy==0}">默认</a>
+            <a href="javascript:void(0)" @click="sortBy=0;page=1;getGoodsList(false)" class="default" v-bind:class="{'cur':sortBy==0}">默认</a>
             <a href="javascript:void(0)" @click="sortGoods" class="price" v-bind:class="{'cur':sortBy==1}">
               价格
               <!--<svg class="icon icon-arrow-short" v-bind:class="{'sort-up':sortFlag==1}">-->
                 <!--<use xlink:href="#icon-arrow-short"></use>-->
               <!--</svg>-->
-              <img src="/static/loading-svg/arrow.svg" class="icon icon-arrow-short" v-bind:class="{'sort-up':sortFlag==-1}">
+              <img src="/static/loading-svg/arrow.svg" class="icon icon-arrow-short" v-bind:class="{'sort-up':sortFlag==1&&sortBy==1,'sort-default':sortBy==0}">
             </a>
             <a href="javascript:void(0)" class="filterby stopPop" @click="showFilterPop">过滤</a>
           </div>
@@ -25,7 +28,7 @@
                 <dt>价格:</dt>
                 <dd><a href="javascript:void(0)" v-bind:class="{'cur':priceChecked=='all'}" @click="setPriceAll">全部</a></dd>
                 <dd v-for="(price,index) in priceFilter">
-                  <a href="javascript:void(0)" @click="setPriceFilter(index)" v-bind:class="{'cur':priceChecked==index}">{{price.startPrice}} - {{price.endPrice}}</a>
+                  <a href="javascript:void(0)" @click="setPriceFilter(index,price)" v-bind:class="{'cur':priceChecked==index}">{{price.startPrice}} - {{price.endPrice}}</a>
                 </dd>
               </dl>
             </div>
@@ -80,6 +83,9 @@
     </div>
 </template>
 <style>
+  .search{
+    height:20px;
+  }
   .load-more{
     height:100px;
     line-height:100px;
@@ -87,6 +93,10 @@
   }
   .sort-up{
     transform:rotate(180deg);
+    transition:all .3s ease-out;
+  }
+  .sort-default{
+    transform:rotate(270deg);
     transition:all .3s ease-out;
   }
   .icon-arrow-short{
@@ -119,6 +129,8 @@
           loading:false,
           mdShow:false,
           mdShowCart:false,
+          searchContent:'',
+          inputContent:'',
           priceFilter:[
             {
               startPrice:'0.00',
@@ -131,6 +143,10 @@
             {
               startPrice:'1000.00',
               endPrice:'2000.00'
+            },
+            {
+              startPrice:'2000.00',
+              endPrice:'6000.00'
             }
           ],
           priceChecked:'all',
@@ -153,9 +169,10 @@
             var param={
               page:this.page,
               pageSize:this.pageSize,
-              sort:this.sortFlag,
+              sort:this.sortBy==1?this.sortFlag:0,
               priceGte:this.priceGte,
-              priceLt:this.priceLt
+              priceLt:this.priceLt,
+              searchContent:this.searchContent
             };
             this.loading=true;
             axios.get("/goods/list",{
@@ -196,40 +213,29 @@
             this.filterBy=true;
             this.overLayFlag=true;
           },
-          setPriceFilter(index){
+          setPriceFilter(index,price){
             this.priceChecked=index;
-            this.setPriceLevel();
+            this.priceGte=price.startPrice;
+            this.priceLt=price.endPrice;
+            this.page=1;
             this.closePop();
+            this.getGoodsList(false);
+            // this.setPriceLevel();
+
           },
           setPriceAll(){
             this.priceChecked='all';
-            this.setPriceLevel();
+            this.page=1;
+            this.priceLt=0;
+            this.priceGte=0;
+            this.closePop();
+            this.getGoodsList(false);
+
+            // this.setPriceLevel();
           },
           closePop(){
             this.filterBy=false;
             this.overLayFlag=false;
-          },
-          setPriceLevel(){
-            this.page=1;
-            switch(this.priceChecked){
-              case 'all':
-                this.priceGte=0;
-                this.priceLt=0;
-                break;
-              case 0:
-                this.priceGte=0;
-                this.priceLt=500;
-                break;
-              case 1:
-                this.priceGte=500;
-                this.priceLt=1000;
-                break;
-              case 2:
-                this.priceGte=1000;
-                this.priceLt=2000;
-                break;
-            }
-            this.getGoodsList(false);
           },
           addCart(productId){
               axios.post('/goods/addCart',{
@@ -249,6 +255,11 @@
         },
         closeModalCart(){
             this.mdShowCart=false;
+        },
+        search(){
+            this.searchContent=this.inputContent;
+            this.page=1;
+            this.getGoodsList(false);
         }
       }
     }
