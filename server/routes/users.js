@@ -74,6 +74,94 @@ router.get("/checkLogin",(req,res,next)=>{
     })
 })
 
+//检测用户名是否存在
+router.post("/checkRegUserName",(req,res,next)=>{
+  let userName=req.body.userName;
+  User.findOne({userName:userName},(err,user)=>{
+    if(err){
+      res.json({
+        status:"1",
+        msg:err.message,
+        result:''
+      })
+    }else{
+      if(user){
+        res.json({
+          status:'101',
+          msg:"用户名已存在",
+          result:''
+        })
+      }else{
+        res.json({
+          status:'0',
+          msg:'',
+          result:'suc'
+        })
+      }
+    }
+  })
+})
+
+//注册接口
+router.post("/register",(req,res,next)=>{
+  let userName=req.body.userName;
+  let userPwd=req.body.userPwd;
+  var platform='622';
+  var r1=Math.floor(Math.random()*10);
+  var r2=Math.floor(Math.random()*10);
+  var sysDate=new Date().Format('yyyyMMddhhmmss');
+  var userId=platform+r1+sysDate+r2;
+  var content={
+    userId:userId,
+    userName:userName,
+    userPwd:userPwd
+  };
+  var newUser=new User(content);
+  newUser.save((err,doc)=>{
+    if(err){
+      res.json({
+        status:'1',
+        msg:err.message,
+        result:''
+      })
+    }else{
+      res.json({
+        status:'0',
+        msg:'',
+        result:'suc'
+      })
+    }
+  })
+})
+
+
+//查询当前用户的购物车数量
+router.get("/getCartCount",(req,res,next)=>{
+  if(req.cookies && req.cookies.userId){
+    var userId=req.cookies.userId;
+    User.findOne({userId:userId},(err,user)=>{
+      if(err){
+        res.json({
+          status:'1',
+          msg:err.message,
+          result:''
+        })
+      }else{
+        var cartList=user.cartList;
+        var cartCount=0;
+        cartList.map((item)=>{
+          cartCount+=parseInt(item.productNum);
+        })
+        res.json({
+          status:'0',
+          msg:'',
+          result:cartCount
+        })
+      }
+    })
+  }
+})
+
 //查询当前用户的购物车
 router.get("/cartList",(req,res,next)=>{
   let userId=req.cookies.userId;

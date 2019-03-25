@@ -3,6 +3,9 @@
   <div v-bind:class="{'md-show':mdShow}" class="md-modal modal-msg md-modal-transition">
     <div class="md-modal-inner">
       <div class="md-top">
+        <div class="md-title">
+          <slot name="title"></slot>
+        </div>
         <button class="md-close" @click="cloesModal">Close</button>
       </div>
       <div class="md-content">

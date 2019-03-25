@@ -237,6 +237,7 @@
               }).then((res)=>{
                 var result=res.data;
                 if(result.status=="0"){
+                  this.$store.commit("updateCartCount",1);
                   this.mdShowCart=true;
                 }else{
                   this.mdShow=true;

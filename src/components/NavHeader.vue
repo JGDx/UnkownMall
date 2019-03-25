@@ -68,7 +68,7 @@
           <a href="javascript:void(0)" class="navbar-link" @click="loginModelFlag=true"  v-if="!nickName">登陆</a>
           <a href="javascript:void(0)" class="navbar-link" @click="logOut"  v-if="nickName">退出</a>
           <div class="navbar-cart-container">
-            <span class="navbar-cart-count"></span>
+            <span class="navbar-cart-count" v-if="cartCount>0">{{cartCount}}</span>
             <a class="navbar-link navbar-cart-link" href="/#/cart">
               <svg class="navbar-cart-logo">
                 <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-cart"></use>
@@ -78,38 +78,58 @@
         </div>
       </div>
     </div>
-    <div v-bind:class="{'md-show':loginModelFlag}" class="md-modal modal-msg md-modal-transition">
-      <div class="md-modal-inner">
-        <div class="md-top">
-          <div class="md-title">登陆</div>
-          <button class="md-close" @click="loginModelFlag=false">Close</button>
-        </div>
-        <div class="md-content">
-          <div class="confirm-tips">
-            <div class="error-wrap">
-              <span class="error error-show" v-show="errorTip">用户名或者密码错误</span>
-            </div>
-            <ul>
-              <li class="regi_form_input">
-                <i class="icon IconPeople"></i>
-                <input placeholder="请输入用户名" type="text" tabindex="1" name="loginname" v-model="userName" class="regi_login_input">
-              </li>
-              <li class="regi_form_input noMargin">
-                <i class="icon IconPwd"></i>
-                <input placeholder="请输入密码"  type="password" tabindex="2" name="password"  v-model="userPwd" class="regi_login_input" @keyup.enter="login">
-              </li>
-            </ul>
-          </div>
-          <div class="login-wrap">
-            <a href="javascript:;" class="btn-login" @click="login">登陆</a>
-          </div>
-        </div>
+    <modal v-bind:mdShow="loginModelFlag" @close="loginModelFlag=false">
+      <span slot="title">登陆</span>
+      <div slot="message">
+        <span class="error error-show" v-show="errorTip">用户名或者密码错误</span>
+        <ul>
+          <li class="regi_form_input">
+            <i class="icon IconPeople"></i>
+            <input placeholder="请输入用户名" type="text" tabindex="1" name="loginname" v-model="userName" class="regi_login_input">
+          </li>
+          <li class="regi_form_input noMargin">
+            <i class="icon IconPwd"></i>
+            <input placeholder="请输入密码"  type="password" tabindex="2" name="password"  v-model="userPwd" class="regi_login_input" @keyup.enter="login">
+          </li>
+        </ul>
       </div>
-    </div>
-    <div v-if="loginModelFlag" class="md-overlay" @click="loginModelFlag=false"></div>
+      <div slot="btnGroup">
+        <a href="javascript:;" class="btn-login" @click="login">登陆</a>
+        <div style="height:10px;"></div>
+        <a href="javascript:;" class="btn-login"  @click="loginModelFlag=false;regModelFlag=true">注册</a>
+      </div>
+    </modal>
+    <modal v-bind:mdShow="regModelFlag" @close="closeReg">
+      <span slot="title">注册</span>
+      <div slot="message">
+        <span class="error error-show" v-show="errUserRepeat">用户名已存在</span><br>
+        <span class="error error-show" v-show="errPwdDifference">两次密码输入不一致</span>
+        <ul>
+          <li class="regi_form_input">
+            <i class="icon IconPeople"></i>
+            <input placeholder="请输入用户名" type="text" tabindex="1" name="loginname" v-model="regUserName" class="regi_login_input" v-on:keyup="checkRegUserName">
+          </li>
+          <li class="regi_form_input noMargin">
+            <i class="icon IconPwd"></i>
+            <input placeholder="请输入密码"  type="password" tabindex="2" name="password"  v-model="regUserPwd" class="regi_login_input">
+          </li>
+          <li class="regi_form_input noMargin">
+            <i class="icon IconPwd"></i>
+            <input placeholder="请再次输入密码"  type="password" tabindex="2" name="password"  v-model="regUserPwd2" class="regi_login_input">
+          </li>
+        </ul>
+      </div>
+      <div slot="btnGroup">
+        <a href="javascript:;" class="btn btn--m" v-bind:class="{'btn--dis':regFlag}" @click="regUser">注册</a>
+        <a href="javascript:;" class="btn btn--m" @click="closeReg">取消</a>
+      </div>
+    </modal>
   </header>
 </template>
 <style>
+  .error{
+    color:red;
+  }
   .header {
     width: 100%;
     background-color: white;
@@ -194,6 +214,8 @@
 <script>
     import '../assets/css/login.css'
     import axios from 'axios'
+    import {mapState} from 'vuex'
+    import Modal from '@/components/Modal'
     export default {
         name: "NavHeader",
       data(){
@@ -202,19 +224,46 @@
             userPwd:'',
             errorTip:false,
             loginModelFlag:false,
-            nickName:''
+            regModelFlag:false,
+            errUserRepeat:false,
+            regUserName:'',
+            regUserPwd:'',
+            regUserPwd2:''
           }
+      },
+      components:{
+          Modal
+      },
+      computed:{
+          ...mapState(['nickName','cartCount']),
+        errPwdDifference(){
+            return !(this.regUserPwd==this.regUserPwd2)
+        },
+        regFlag(){
+            if(this.errPwdDifference||this.errUserRepeat){
+              return true;
+            }else{
+              return false;
+            }
+        }
+          // nickName(){
+          //   return this.$store.state.nickName;
+          // },
+          // cartCount(){
+          //   return this.$store.state.cartCount;
+          // }
       },
       mounted(){
           this.checkLogin();
-      }
-      ,
+      },
       methods:{
           checkLogin(){
             axios.get("/users/checkLogin").then((response)=>{
               let res=response.data;
               if(res.status=="0"){
-                this.nickName=res.result.userName;
+                // this.nickName=res.result.userName;
+                this.$store.commit("updateUserInfo",res.result.userName);
+                this.getCartCount();
               }
             })
           },
@@ -226,11 +275,14 @@
             axios.post("/users/login",{
               userName:this.userName,
               userPwd:this.userPwd
-            }).then((res)=>{
-              if(res.data.status=="0"){
+            }).then((response)=>{
+              let res=response.data;
+              if(res.status=="0"){
                 this.errorTip=false;
                 this.loginModelFlag=false;
-                this.nickName=res.data.result.userName;
+                // this.nickName=res.result.userName;
+                this.$store.commit("updateUserInfo",res.result.userName);
+                this.getCartCount();
               }else{
                 this.errorTip=true;
               }
@@ -240,10 +292,55 @@
             axios.post("/users/logout").then((res)=>{
               let _res=res.data;
               if(_res.status=="0"){
-                this.nickName="";
+                // this.nickName="";
+                this.$store.commit("updateUserInfo","");
               }
             })
-          }
+          },
+        getCartCount(){
+            axios.get("/users/getCartCount").then((response)=>{
+              let res=response.data;
+              if(res.status=='0'){
+                this.$store.commit("initCartCount");
+                this.$store.commit("updateCartCount",res.result);
+              }
+            })
+        },
+        regUser(){
+            if(!this.regFlag)
+            {
+              axios.post("/users/register",{
+                userName:this.regUserName,
+                userPwd:this.regUserPwd
+              }).then((response)=>{
+                let res=response.data;
+                if(res.status=='0'){
+                  this.userName=this.regUserName;
+                  this.userPwd=this.regUserPwd;
+                  this.login();
+                  this.closeReg();
+                }
+              })
+            }
+        },
+        closeReg(){
+          this.regModelFlag=false;
+          this.regUserName='';
+          this.regUserPwd='';
+          this.regUserPwd2=''
+        },
+        checkRegUserName(){
+            axios.post("/users/checkRegUserName",{
+              userName:this.regUserName
+            }).then((response)=>{
+              let res=response.data;
+              if(res.status=='0'){
+                this.errUserRepeat=false;
+              }else if(res.status=='101'){
+                this.errUserRepeat=true;
+              }
+            })
+        }
       }
     }
 </script>

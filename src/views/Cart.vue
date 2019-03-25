@@ -56,7 +56,7 @@
                 </div>
                 <div class="cart-tab-5">
                   <div class="cart-item-opration">
-                    <a href="javascript:;" class="item-edit-btn" @click="delCartConfirm(item.productId)">
+                    <a href="javascript:;" class="item-edit-btn" @click="delCartConfirm(item)">
                       <svg class="icon icon-del">
                         <use xlink:href="#icon-del"></use>
                       </svg>
@@ -144,31 +144,31 @@
           return{
             cartList:[],
             modalConfirm:false,
-            productId:''
+            delItem:{}
           }
         },
         name: "Cart",
         computed:{
-        checkAllFlag(){
-          return this.checkedCount==this.cartList.length;
+          checkAllFlag(){
+            return this.checkedCount==this.cartList.length;
+          },
+          checkedCount(){
+            let i=0;
+            this.cartList.forEach((item)=>{
+              if(item.checked=='1')i++;
+            })
+            return i;
+          },
+          totalPrice(){
+            let money=0;
+            this.cartList.forEach((item)=>{
+              if(item.checked=='1') {
+                money += parseFloat(item.salePrice) * parseFloat(item.productNum);
+              }
+            });
+            return money;
+          }
         },
-        checkedCount(){
-          let i=0;
-          this.cartList.forEach((item)=>{
-            if(item.checked=='1')i++;
-          })
-          return i;
-        },
-        totalPrice(){
-          let money=0;
-          this.cartList.forEach((item)=>{
-            if(item.checked=='1') {
-              money += parseFloat(item.salePrice) * parseFloat(item.productNum);
-            }
-          });
-          return money;
-        }
-      },
         components:{
           NavHeader,
           NavFooter,
@@ -187,18 +187,19 @@
                 }
               });
             },
-          delCartConfirm(productId){
-              this.productId=productId;
+          delCartConfirm(item){
+              this.delItem=item;
               this.modalConfirm=true;
           },
           delCart(){
               axios.post('/users/cartDel',{
-                productId:this.productId
+                productId:this.delItem.productId
               }).then((response)=>{
                 let res=response.data;
                 if(res.status=='0'){
                   this.modalConfirm=false;
                   this.init();
+                  this.$store.commit("updateCartCount",-this.delItem.productNum);
                 }
               });
           },
@@ -208,12 +209,14 @@
           editCart(flag,item){
             if(flag=="add"){
               item.productNum++;
+              this.$store.commit("updateCartCount",1);
             }else if(flag=="minu"){
               if(item.productNum<=1)
               {
                 return;
               }else {
                 item.productNum--;
+                this.$store.commit("updateCartCount",-1);
               }
             }else{
               item.checked=item.checked=="1"?"-1":"1";

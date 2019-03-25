@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vuex - Mutations</title>
+  <script src="./../../node_modules/vue/dist/vue.js"></script>
+  <script src="./../../node_modules/vuex/dist/vuex.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <h2>{{msg}}</h2>
+  <a href="javascript:;" @click="add">点击</a>
+  <counter></counter>
+</div>
+<script>
+  const counter={
+    template:`
+      <div>
+        <div>{{count}}</div>
+        <div>{{name}}</div>
+        <div>{{userName}}</div>
+        <a href="javascript:;" @click="update">更新</a>
+      </div>
+    `,
+    computed:{
+      count(){
+        return this.$store.state.count;
+      },
+      name(){
+        return this.$store.state.name;
+      },
+      userName(){
+        return this.$store.getters.userName;
+      }
+    },
+    methods:{
+      update(){
+        // this.$store.commit("increment",50);
+        this.$store.state.count=50;
+      }
+    }
+  }
+  const store=new Vuex.Store({
+    state:{
+      count:10,
+      name:'jack'
+    },
+    getters:{
+      userName(state){
+        return state.name+',Hello';
+      }
+    },
+    mutations:{
+      increment(state,num){
+        state.count=num;
+      },
+      updateName(state,name){
+        state.name=name;
+      }
+    },
+    actions:{
+      incrementAction(context,num){
+        context.commit("increment",num);
+        context.commit("updateName",'xzh');
+      }
+    }
+  });
+  new Vue({
+    el:"#app",
+    store,
+    data:{
+      msg:"Vuex的使用"
+    },
+    components:{
+      counter
+    },
+    methods:{
+      add(){
+        // this.$store.commit("increment",100);
+        // this.$store.commit("updateName",'徐宗昊');
+        this.$store.dispatch("incrementAction",5);
+      }
+    }
+  })
+</script>
+
+</body>
+</html>
