@@ -20,7 +20,8 @@ Vue.filter("currency",currency);
 const store=new Vuex.Store({
   state:{
     nickName:'',
-    cartCount:0
+    cartCount:0,
+    loginFlag:false
   },
   mutations:{
     updateUserInfo(state,nickname){
@@ -31,6 +32,9 @@ const store=new Vuex.Store({
     },
     initCartCount(state){
       state.cartCount=0;
+    },
+    updateLoginFlag(state,loginFlag){
+      state.loginFlag=loginFlag;
     }
   }
 })

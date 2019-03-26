@@ -184,6 +184,9 @@
                 let res=response.data;
                 if(res.status=='0'){
                   this.cartList=res.result;
+                }else if(res.status=='10001')
+                {
+                  this.$store.commit("updateLoginFlag",true);
                 }
               });
             },
@@ -200,6 +203,9 @@
                   this.modalConfirm=false;
                   this.init();
                   this.$store.commit("updateCartCount",-this.delItem.productNum);
+                }else if(res.status=='10001')
+                {
+                  this.$store.commit("updateLoginFlag",true);
                 }
               });
           },
@@ -230,8 +236,9 @@
               if(res.status=='0'){
                 this.modalConfirm=false;
                 this.init();
-              }else{
-                console.log("err:"+res.msg);
+              }else if(res.status=='10001')
+              {
+                this.$store.commit("updateLoginFlag",true);
               }
             })
           },

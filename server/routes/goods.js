@@ -55,6 +55,7 @@ router.get("/list",(req,res,next)=> {
       res.json({
         status:'1',
         msg:err.message,
+        result:''
       });
     }else{
       res.json({
@@ -78,7 +79,8 @@ router.post("/addCart",(req,res,next)=>{
     if(err){
       res.json({
         status:"1",
-        msg:err.message
+        msg:err.message,
+        result:''
       })
     }else{
       if(userDoc){                                            //如果查询到用户
@@ -94,7 +96,8 @@ router.post("/addCart",(req,res,next)=>{
             if(err3){
               res.json({
                 status:"1",
-                msg:err3.message
+                msg:err3.message,
+                result:''
               })
             }else{
               res.json({
@@ -109,7 +112,8 @@ router.post("/addCart",(req,res,next)=>{
             if(err1){
               res.json({
                 status:"1",
-                msg:err1.message
+                msg:err1.message,
+                result:''
               })
             }else{
               if(doc1){                                         //如果查询到要添加的商品信息
@@ -120,7 +124,8 @@ router.post("/addCart",(req,res,next)=>{
                   if(err2){
                     res.json({
                       status:"1",
-                      msg:err2.message
+                      msg:err2.message,
+                      result:''
                     })
                   }else{
                     res.json({

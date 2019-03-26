@@ -8,7 +8,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var goodsRouter = require('./routes/goods')
 var app = express();
-var session = require("express-session");
+// var session = require("express-session");
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -19,11 +19,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({
-  secret: 'this is the secret for cookie',
-  resave: false,
-  saveUninitialized: true
-}));
+// app.use(session({
+//   secret: 'this is the secret for cookie',
+//   resave: false,
+//   saveUninitialized: true
+// }));
 // app.use(function (req, res, next) {
 //   var url = req.originalUrl;
 //   if (url != "/" && undefined == req.session.userId) {

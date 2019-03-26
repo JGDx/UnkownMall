@@ -204,6 +204,9 @@
                   this.addressList=res.result;
                   if(this.addressList.addressId)    //如果有地址才可以取第一位id
                     this.selectedAddrId=this.addressList[0].addressId;
+              }else if(res.status=='10001')
+              {
+                this.$store.commit("updateLoginFlag",true);
               }
             })
           },
@@ -231,6 +234,9 @@
                     item.isDefault=false;
                   }
                 })
+              }else if(res.status=='10001')
+              {
+                this.$store.commit("updateLoginFlag",true);
               }
             })
         },
@@ -256,6 +262,9 @@
                 if(res.status=='0'){
                   this.closeModal();
                   this.init();
+                }else if(res.status=='10001')
+                {
+                  this.$store.commit("updateLoginFlag",true);
                 }
               })
             }
@@ -276,6 +285,9 @@
                 if(res.status=='0'){
                   this.closeModal();
                   this.init();
+                }else if(res.status=='10001')
+                {
+                  this.$store.commit("updateLoginFlag",true);
                 }
               })
             }else{

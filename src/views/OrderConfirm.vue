@@ -150,6 +150,9 @@
                     this.orderTotal=this.subTotal+this.shipping-this.discount+this.tax;
                   }
                 })
+              }else if(res.status=='10001')
+              {
+                this.$store.commit("updateLoginFlag",true);
               }
             })
           },
@@ -164,6 +167,9 @@
               this.$router.push({
                 path:'/orderSuccess?orderId='+res.result.orderId
               })
+            }else if(res.status=='10001')
+            {
+              this.$store.commit("updateLoginFlag",true);
             }
           })
         }

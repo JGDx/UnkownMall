@@ -127,6 +127,14 @@
         <a href="javascript:;" class="btn btn--m" @click="closeReg">取消</a>
       </div>
     </modal>
+    <modal v-bind:mdShow="loginFlag" v-on:close="closeModal">
+      <p slot="message">
+        请先登陆！
+      </p>
+      <div slot="btnGroup">
+        <a class="btn btn--m" href="javascript:;" @click="closeModal">关闭</a>
+      </div>
+    </modal>
   </header>
 </template>
 <style>
@@ -238,7 +246,7 @@
           Modal
       },
       computed:{
-          ...mapState(['nickName','cartCount']),
+          ...mapState(['nickName','cartCount','loginFlag']),
         errPwdDifference(){
             return !(this.regUserPwd==this.regUserPwd2)
         },
@@ -286,6 +294,7 @@
                 // this.nickName=res.result.userName;
                 this.$store.commit("updateUserInfo",res.result.userName);
                 this.getCartCount();
+                location.reload();
               }else{
                 this.errorTip=true;
               }
@@ -297,6 +306,7 @@
               if(_res.status=="0"){
                 // this.nickName="";
                 this.$store.commit("updateUserInfo","");
+                location.reload();
               }
             })
           },
@@ -343,6 +353,9 @@
                 this.errUserRepeat=true;
               }
             })
+        },
+        closeModal(){
+            this.$store.commit("updateLoginFlag",false);
         }
       }
     }

@@ -73,6 +73,9 @@
          if(res.status=='0'){
            this.orderTotal=res.result.orderTotal;
            this.orderId=orderId;
+         }else if(res.status=='10001')
+         {
+           this.$store.commit("updateLoginFlag",true);
          }
        })
       }

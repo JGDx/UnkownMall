@@ -2,7 +2,7 @@
   <div class="nav-breadcrumb-wrap">
     <div class="container">
       <nav class="nav-breadcrumb">
-        <a href="/">主页</a>
+        <router-link to="/">主页</router-link>
         <!--<span>Goods</span>-->
         <slot name="bread"></slot>
       </nav>

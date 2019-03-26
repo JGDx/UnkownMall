@@ -39,7 +39,7 @@
                 <ul>
                   <li v-for="(item,index) in goodsList">
                     <div class="pic">
-                      <a href="#"><img  v-bind:src="'/static/'+item.productImage" alt=""></a>
+                      <a href="javascript:;"><img  v-bind:src="'/static/'+item.productImage" alt=""></a>
                     </div>
                     <div class="main">
                       <div class="name">{{item.productName}}</div>
@@ -59,14 +59,7 @@
         </div>
       </div>
       <div class="md-overlay" v-show="overLayFlag" @click="closePop"></div>
-      <modal v-bind:mdShow="mdShow" v-on:close="closeModal">
-        <p slot="message">
-          请先登陆，否则无法加入到购物车中！
-        </p>
-        <div slot="btnGroup">
-          <a class="btn btn--m" href="javascript:;" @click="closeModal">关闭</a>
-        </div>
-      </modal>
+
       <modal v-bind:mdShow="mdShowCart" v-on:close="closeModalCart">
         <p slot="message">
           <svg style="width:50px;height:50px;margin-right:20px;">
@@ -92,11 +85,11 @@
     text-align: center;
   }
   .sort-up{
-    transform:rotate(180deg);
+    transform:rotate(-180deg);
     transition:all .3s ease-out;
   }
   .sort-default{
-    transform:rotate(270deg);
+    transform:rotate(-90deg);
     transition:all .3s ease-out;
   }
   .icon-arrow-short{
@@ -127,7 +120,6 @@
           priceGte:0,
           priceLt:0,
           loading:false,
-          mdShow:false,
           mdShowCart:false,
           searchContent:'',
           inputContent:'',
@@ -193,6 +185,10 @@
                   this.busy=false;
                 }
               }else{
+                if(res.status=='10001')
+                {
+                  this.$store.commit("updateLoginFlag",true);
+                }
                 this.goodsList=[];
               }
             })
@@ -246,13 +242,13 @@
                   this.$store.commit("updateCartCount",1);
                   this.mdShowCart=true;
                 }else{
+                  if(result.status=='10001'){
+                    this.$store.commit("updateLoginFlag",true);
+                  }
                   this.mdShow=true;
                 }
               })
           },
-        closeModal(){
-            this.mdShow=false;
-        },
         closeModalCart(){
             this.mdShowCart=false;
         },
