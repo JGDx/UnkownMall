@@ -8,7 +8,9 @@
         <div class="container">
           <div class="filter-nav">
             <div style="float:left">
-              <input type="text" class="search" v-model="inputContent" @keyup.enter="search" ><a href="javascript:;" class="btn btn--white" @click="search" >搜索</a>
+              <input type="text" class="search" v-model="inputContent" @keyup.enter="search" >
+              <a href="javascript:;" class="btn btn--white" @click="search" >搜索</a>
+              <a class="btn--s" v-if="admin" @click="mdAddCart=true">添加新商品</a>
             </div>
             <span class="sortby">排序:</span>
             <a href="javascript:void(0)" @click="sortBy=0;page=1;getGoodsList(false)" class="default" v-bind:class="{'cur':sortBy==0}">默认</a>
@@ -38,16 +40,22 @@
               <div class="accessory-list col-4">
                 <ul>
                   <li v-for="(item,index) in goodsList">
+                    <div class="goods-del" v-if="admin">
+                      <a href="javascript:;" class="addr-del-btn" @click="showModal(item.addressId)">
+                        <svg class="icon icon-del"><use xlink:href="#icon-del"></use></svg>
+                      </a>
+                    </div>
                     <div class="pic">
                       <a href="javascript:;"><img  v-bind:src="'/static/'+item.productImage" alt=""></a>
                     </div>
                     <div class="main">
                       <div class="name">{{item.productName}}</div>
-                      <div class="price">￥{{item.salePrice }}</div>
+                      <div class="price">{{item.salePrice | currency('￥') }}</div>
                       <div class="btn-area">
                         <a href="javascript:;" class="btn btn--m" @click="addCart(item.productId)">加入购物车</a>
                       </div>
                     </div>
+
                   </li>
                 </ul>
                 <div class="load-more" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="30">
@@ -72,10 +80,35 @@
           <router-link class="btn btn--m" to="/cart">查看购物车</router-link>
         </div>
       </modal>
+      <modal v-bind:mdShow="mdAddCart" v-on:close="closeModalAddCart">
+        <span slot="title">添加商品</span>
+        <div slot="message">
+          <span>上传图片：</span><input type="file" value=""  class="upimg" @change="upLoad" multiple>
+        </div>
+        <div slot="btnGroup">
+          <a href="javascript:;" class="btn btn--m" @click="closeModalAddCart">添加</a>
+          <a href="javascript:;" class="btn btn--m" @click="closeModalAddCart">取消</a>
+        </div>
+      </modal>
       <nav-footer></nav-footer>
     </div>
 </template>
 <style>
+  .goods-del{
+    float:right;
+    padding-right:5px;
+    padding-top:5px;
+  }
+  .goods-del svg{
+    width:25px;
+    height:25px;
+    fill:gray;
+  }
+  .goods-del svg:hover{
+    width:25px;
+    height:25px;
+    fill: #ee7a23;
+  }
   .search{
     height:20px;
   }
@@ -123,6 +156,7 @@
           mdShowCart:false,
           searchContent:'',
           inputContent:'',
+          mdAddCart:false,
           priceFilter:[
             {
               startPrice:'0.00',
@@ -147,6 +181,11 @@
        }
       },
       name: "GoodsList",
+      computed:{
+        admin(){
+          return this.$store.state.nickName=='admin';
+        }
+      },
       components:{
         NavHeader,
         NavFooter,
@@ -256,6 +295,64 @@
             this.searchContent=this.inputContent;
             this.page=1;
             this.getGoodsList(false);
+        },
+        closeModalAddCart(){
+            this.mdAddCart=false;
+        },
+        upLoad(e){
+            let photoFile=e.target;
+            let val=e.target.value;
+            if(photoFile.files.length==0)return false;
+            for (let i=0;i<photoFile.files.length;i++){
+              this.fileAdd(photoFile.files[i],i);
+            }
+        },
+        fileAdd(file,index){
+          let csrf_token = this.getCookie('XSRF-TOKEN');
+          let formFile = new FormData();
+          let imgName = 'img0';
+          formFile.append(imgName, file);
+          formFile.append("_token", csrf_token);
+          let name = file.name
+          let size = file.size
+          let types = '.jpg,.jpeg,.png,.gif'  //文件格式
+          let fileExt = name.substring(name.lastIndexOf('.')).toLowerCase()
+          let result = types.indexOf(fileExt)
+          if (result < 0) {       //验证图片格式
+            this.$dialog.toast({
+              mes: '图片格式不正确',
+              timeout: 1000
+            })
+            return false
+          }
+          if (size > 1 * 1024 * 1024) {
+            this.$dialog.toast({
+              mes: '图片大小不能大于1M',
+              timeout: 1000
+            })
+            return false
+          }
+          if (this.fileList.length >= this.uploadNum) {
+            this.$dialog.toast({
+              mes: '图片最多只能上传' + this.uploadNum + '张',
+              timeout: 1000
+            })
+            return false
+          }
+
+          axios.post(this.upUrl,formFile)
+            .then((res) => {
+              this.upNum = this.fileList.length + 1;   //计算图片数量
+              this.fileList.push(file);                //添加进图片数组
+              let imgUrl = this.showUrl + res.data.data;  //图片回显地址
+              let upImg = res.data.data;               //传给后台的图片地址
+              this.imgList.push(imgUrl);
+              this.upImgList.push(upImg);
+              let upImgAll = this.upImgList.join(',');
+              this.$emit('input', upImgAll);
+            }).catch((err) => {
+            console.log(err);
+          })
         }
       }
     }
