@@ -21,7 +21,8 @@ const store=new Vuex.Store({
   state:{
     nickName:'',
     cartCount:0,
-    loginFlag:false
+    loginFlag:false,
+    admin:false
   },
   mutations:{
     updateUserInfo(state,nickname){
@@ -35,6 +36,9 @@ const store=new Vuex.Store({
     },
     updateLoginFlag(state,loginFlag){
       state.loginFlag=loginFlag;
+    },
+    updateAdmin(state,isAdmin){
+      state.admin=isAdmin;
     }
   }
 })

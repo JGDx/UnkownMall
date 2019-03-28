@@ -54,7 +54,7 @@
                       <div class="btn-area">
                         <a href="javascript:;" class="btn btn--m" @click="addCart(item.productId)">加入购物车</a>
                       </div>
-                    </div>
+                    </div>d
 
                   </li>
                 </ul>
@@ -82,11 +82,13 @@
       </modal>
       <modal v-bind:mdShow="mdAddCart" v-on:close="closeModalAddCart">
         <span slot="title">添加商品</span>
-        <div slot="message">
-          <span>上传图片：</span><input type="file" value=""  class="upimg" @change="upLoad" multiple>
+        <div slot="message" class="addInput">
+          <span>上传图片：</span><input type="file" value=""  class="upimg" @change="upLoad" multiple><br>
+          <span>商品名称：</span><input type="text" v-model="addProductName"><br>
+          <span>价格：</span><input type="text" v-model="addSalePrice">
         </div>
         <div slot="btnGroup">
-          <a href="javascript:;" class="btn btn--m" @click="closeModalAddCart">添加</a>
+          <a href="javascript:;" class="btn btn--m" @click="addGoods">添加</a>
           <a href="javascript:;" class="btn btn--m" @click="closeModalAddCart">取消</a>
         </div>
       </modal>
@@ -94,6 +96,20 @@
     </div>
 </template>
 <style>
+  .addInput{
+    text-align: left;
+    line-height:60px;
+  }
+  .addInput span{
+    display:inline-block;
+    width:100px;
+  }
+  .addInput input{
+    height:30px;
+  }
+  .addInput .error-text{
+    margin:0 auto;
+  }
   .goods-del{
     float:right;
     padding-right:5px;
@@ -141,6 +157,7 @@
   import NavBread from '@/components/NavBread'
   import Modal from '@/components/Modal'
   import axios from 'axios'
+  import {mapState} from 'vuex'
     export default {
       data(){
         return{
@@ -157,6 +174,9 @@
           searchContent:'',
           inputContent:'',
           mdAddCart:false,
+          addProductName:'',
+          addSalePrice:0,
+          addProductImage:'',
           priceFilter:[
             {
               startPrice:'0.00',
@@ -182,9 +202,7 @@
       },
       name: "GoodsList",
       computed:{
-        admin(){
-          return this.$store.state.nickName=='admin';
-        }
+        ...mapState(['admin'])
       },
       components:{
         NavHeader,
@@ -197,6 +215,9 @@
       },
       methods:{
           getGoodsList(flag){
+            if(flag==false){
+              this.page=1;
+            }
             var param={
               page:this.page,
               pageSize:this.pageSize,
@@ -308,11 +329,9 @@
             }
         },
         fileAdd(file,index){
-          let csrf_token = this.getCookie('XSRF-TOKEN');
           let formFile = new FormData();
           let imgName = 'img0';
           formFile.append(imgName, file);
-          formFile.append("_token", csrf_token);
           let name = file.name
           let size = file.size
           let types = '.jpg,.jpeg,.png,.gif'  //文件格式
@@ -332,27 +351,29 @@
             })
             return false
           }
-          if (this.fileList.length >= this.uploadNum) {
-            this.$dialog.toast({
-              mes: '图片最多只能上传' + this.uploadNum + '张',
-              timeout: 1000
-            })
-            return false
-          }
 
-          axios.post(this.upUrl,formFile)
-            .then((res) => {
-              this.upNum = this.fileList.length + 1;   //计算图片数量
-              this.fileList.push(file);                //添加进图片数组
-              let imgUrl = this.showUrl + res.data.data;  //图片回显地址
-              let upImg = res.data.data;               //传给后台的图片地址
-              this.imgList.push(imgUrl);
-              this.upImgList.push(upImg);
-              let upImgAll = this.upImgList.join(',');
-              this.$emit('input', upImgAll);
+          axios.post('/admin/addImage',formFile)
+            .then((response) => {
+              let res=response.data;
+              this.addProductImage=res.result.productImage;
             }).catch((err) => {
             console.log(err);
           })
+        },
+        addGoods(){
+            axios.post('/admin/addGoods',{
+              productName:this.addProductName,
+              salePrice:this.addSalePrice,
+              productImage:this.addProductImage
+            }).then((response)=>{
+              let res=response.data;
+              if(res.status=='0'){
+                this.getGoodsList(false);
+                this.closeModalAddCart();
+              }else{
+                console.log(res.msg);
+              }
+            })
         }
       }
     }

@@ -275,6 +275,10 @@
                 // this.nickName=res.result.userName;
                 this.$store.commit("updateUserInfo",res.result.userName);
                 this.getCartCount();
+                if(this.$store.state.nickName=='admin')
+                  this.$store.commit("updateAdmin",true);
+                else
+                  this.$store.commit("updateAdmin",false);
               }
             })
           },
