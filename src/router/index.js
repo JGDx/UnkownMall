@@ -5,6 +5,7 @@ import Cart from '@/views/Cart'
 import Address from '@/views/Address'
 import OrderConfirm from '@/views/OrderConfirm'
 import OrderSuccess from '@/views/OrderSuccess'
+import Pay from '@/views/Pay'
 Vue.use(Router)
 
 export default new Router({
@@ -33,6 +34,11 @@ export default new Router({
       path:'/orderSuccess',
       name:'OrderSuccess',
       component:OrderSuccess
+    },
+    {
+      path:'/pay',
+      name:'Pay',
+      component:Pay
     }
 
   ]

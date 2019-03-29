@@ -38,7 +38,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req,res,next)=>{
   if(req.cookies.userId){
-    if(req.path.indexOf('/admin')){
+    if(req.path.indexOf('/admin')>-1){
       if(req.cookies.userId=='100000077'){
         next();
       }else{

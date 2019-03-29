@@ -123,9 +123,9 @@
       data(){
           return{
             cartList:[],
-            shipping:100,     //运费
-            discount:200,     //折扣
-            tax:400,           //税
+            shipping:10,     //运费
+            discount:5,     //折扣
+            tax:2,           //税
             subTotal:0,
             orderTotal:0
           }
@@ -165,7 +165,7 @@
             let res=response.data;
             if(res.status=='0'){
               this.$router.push({
-                path:'/orderSuccess?orderId='+res.result.orderId
+                path:'/pay?orderId='+res.result.orderId
               })
             }else if(res.status=='10001')
             {

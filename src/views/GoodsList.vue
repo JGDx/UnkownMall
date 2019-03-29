@@ -30,7 +30,7 @@
                 <dt>价格:</dt>
                 <dd><a href="javascript:void(0)" v-bind:class="{'cur':priceChecked=='all'}" @click="setPriceAll">全部</a></dd>
                 <dd v-for="(price,index) in priceFilter">
-                  <a href="javascript:void(0)" @click="setPriceFilter(index,price)" v-bind:class="{'cur':priceChecked==index}">{{price.startPrice}} - {{price.endPrice}}</a>
+                  <a href="javascript:void(0)" @click="setPriceFilter(index,price)" v-bind:class="{'cur':priceChecked==index}">{{price.startPrice | currency('￥') }} - {{price.endPrice | currency('￥') }}</a>
                 </dd>
               </dl>
             </div>
@@ -46,7 +46,10 @@
                       </a>
                     </div>
                     <div class="pic">
-                      <a href="javascript:;"><img  v-bind:src="'/static/'+item.productImage" alt="" @click="showUpdateModal(item)"></a>
+                      <a href="javascript:;">
+                        <img v-if="admin"  v-bind:src="'/static/'+item.productImage" alt="" @click="showUpdateModal(item)">
+                        <img v-if="!admin"  v-bind:src="'/static/'+item.productImage" alt="" @click="addCart(item.productId)">
+                      </a>
                     </div>
                     <div class="main">
                       <div class="name">{{item.productName}}</div>
