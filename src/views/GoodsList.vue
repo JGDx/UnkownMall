@@ -10,7 +10,7 @@
             <div style="float:left">
               <input type="text" class="search" v-model="inputContent" @keyup.enter="search" >
               <a href="javascript:;" class="btn btn--white" @click="search" >搜索</a>
-              <a class="btn--s" v-if="admin" @click="mdAddCart=true">添加新商品</a>
+              <a class="btn--s" v-if="admin" @click="mdAddGoods=true">添加新商品</a>
             </div>
             <span class="sortby">排序:</span>
             <a href="javascript:void(0)" @click="sortBy=0;page=1;getGoodsList(false)" class="default" v-bind:class="{'cur':sortBy==0}">默认</a>
@@ -41,12 +41,12 @@
                 <ul>
                   <li v-for="(item,index) in goodsList">
                     <div class="goods-del" v-if="admin">
-                      <a href="javascript:;" class="addr-del-btn" @click="showModal(item.addressId)">
+                      <a href="javascript:;" class="addr-del-btn" @click="showDelModal(item.productId)">
                         <svg class="icon icon-del"><use xlink:href="#icon-del"></use></svg>
                       </a>
                     </div>
                     <div class="pic">
-                      <a href="javascript:;"><img  v-bind:src="'/static/'+item.productImage" alt=""></a>
+                      <a href="javascript:;"><img  v-bind:src="'/static/'+item.productImage" alt="" @click="showUpdateModal(item)"></a>
                     </div>
                     <div class="main">
                       <div class="name">{{item.productName}}</div>
@@ -54,7 +54,7 @@
                       <div class="btn-area">
                         <a href="javascript:;" class="btn btn--m" @click="addCart(item.productId)">加入购物车</a>
                       </div>
-                    </div>d
+                    </div>
 
                   </li>
                 </ul>
@@ -80,7 +80,7 @@
           <router-link class="btn btn--m" to="/cart">查看购物车</router-link>
         </div>
       </modal>
-      <modal v-bind:mdShow="mdAddCart" v-on:close="closeModalAddCart">
+      <modal v-bind:mdShow="mdAddGoods" v-on:close="closeModalAddGoods">
         <span slot="title">添加商品</span>
         <div slot="message" class="addInput">
           <span>上传图片：</span><input type="file" value=""  class="upimg" @change="upLoad" multiple><br>
@@ -89,7 +89,26 @@
         </div>
         <div slot="btnGroup">
           <a href="javascript:;" class="btn btn--m" @click="addGoods">添加</a>
-          <a href="javascript:;" class="btn btn--m" @click="closeModalAddCart">取消</a>
+          <a href="javascript:;" class="btn btn--m" @click="closeModalAddGoods">取消</a>
+        </div>
+      </modal>
+      <modal v-bind:mdShow="mdDelGoods" v-on:close="closeModalDelGoods">
+        <span slot="title">删除商品</span>
+        <span slot="message">确认要删除该商品吗？</span>
+        <div slot="btnGroup">
+          <a href="javascript:;" class="btn btn--m" @click="delGoods">确认</a>
+          <a href="javascript:;" class="btn btn--m" @click="closeModalDelGoods">取消</a>
+        </div>
+      </modal>
+      <modal v-bind:mdShow="mdUpdateGoods" v-on:close="closeModalUpdateGoods">
+        <span slot="title">修改商品</span>
+        <div slot="message" class="addInput">
+          <span>商品名称：</span><input type="text" v-model="updateProductName"><br>
+          <span>价格：</span><input type="text" v-model="updateSalePrice">
+        </div>
+        <div slot="btnGroup">
+          <a href="javascript:;" class="btn btn--m" @click="updateGoods">修改</a>
+          <a href="javascript:;" class="btn btn--m" @click="closeModalUpdateGoods">取消</a>
         </div>
       </modal>
       <nav-footer></nav-footer>
@@ -170,13 +189,19 @@
           priceGte:0,
           priceLt:0,
           loading:false,
-          mdShowCart:false,
           searchContent:'',
           inputContent:'',
-          mdAddCart:false,
+          mdShowCart:false,
+          mdAddGoods:false,
+          mdDelGoods:false,
+          mdUpdateGoods:false,
           addProductName:'',
           addSalePrice:0,
           addProductImage:'',
+          delProductId:'',
+          updateProductName:'',
+          updateSalePrice:0,
+          updateProductId:'',
           priceFilter:[
             {
               startPrice:'0.00',
@@ -317,8 +342,11 @@
             this.page=1;
             this.getGoodsList(false);
         },
-        closeModalAddCart(){
-            this.mdAddCart=false;
+        closeModalAddGoods(){
+            this.addProductName='';
+            this.addSalePrice=0;
+            this.addProductImage='';
+            this.mdAddGoods=false;
         },
         upLoad(e){
             let photoFile=e.target;
@@ -369,11 +397,55 @@
               let res=response.data;
               if(res.status=='0'){
                 this.getGoodsList(false);
-                this.closeModalAddCart();
+                this.closeModalAddGoods();
               }else{
                 console.log(res.msg);
               }
             })
+        },
+        showDelModal(id){
+            this.delProductId=id;
+            this.mdDelGoods=true;
+        },
+        closeModalDelGoods(){
+            this.mdDelGoods=false;
+        },
+        delGoods(){
+            axios.post('/admin/delProduct',{
+              productId:this.delProductId
+            }).then((response)=>{
+              let res=response.data;
+              if(res.status=='0'){
+                this.closeModalDelGoods();
+                this.getGoodsList(false);
+              }else{
+                console.log(res.msg);
+              }
+            })
+        },
+        closeModalUpdateGoods(){
+            this.mdUpdateGoods=false;
+        },
+        updateGoods(){
+            axios.post("/admin/updateGoods",{
+              productId:this.updateProductId,
+              productName:this.updateProductName,
+              salePrice:this.updateSalePrice
+            }).then((response)=>{
+              let res=response.data;
+              if(res.status=='0'){
+                this.closeModalUpdateGoods();
+                this.getGoodsList(false);
+              }else{
+                console.log(res.msg);
+              }
+            })
+        },
+        showUpdateModal(item){
+            this.updateProductId=item.productId;
+            this.updateProductName=item.productName;
+            this.updateSalePrice=item.salePrice;
+            this.mdUpdateGoods=true;
         }
       }
     }

@@ -9,7 +9,7 @@ var multipart=require('connect-multiparty');
 var multipartMiddleware=multipart();
 
 
-
+//存放图片
 router.post("/addImage",multipartMiddleware,(req,res,next)=>{
   console.log(req.body,req.files);
   console.log(req.files.img0.path);
@@ -23,6 +23,7 @@ router.post("/addImage",multipartMiddleware,(req,res,next)=>{
   })
 });
 
+//增加商品
 router.post("/addGoods",(req,res,next)=>{
   let productImage=req.body.productImage;
   let productName=req.body.productName;
@@ -57,5 +58,64 @@ router.post("/addGoods",(req,res,next)=>{
   })
 });
 
+
+//删除商品
+router.post('/delProduct',(req,res,next)=>{
+  let productId=req.body.productId;
+  Goods.deleteOne({
+    productId:productId
+  },(err,doc)=>{
+    if(err){
+      res.json({
+        status:'1',
+        msg:err.message,
+        result:''
+      })
+    }else{
+      res.json({
+        status:'0',
+        msg:'',
+        result:'suc'
+      })
+    }
+  });
+});
+
+//更改商品
+router.post('/updateGoods',(req,res,next)=>{
+  let productId=req.body.productId;
+  let productName=req.body.productName;
+  let salePrice=req.body.salePrice;
+  Goods.update({
+    productId:productId
+  },{
+    $set:{
+      productName:productName,
+      salePrice:salePrice
+      // $and:[
+      //   {
+      //     productName:productName
+      //   },
+      //   {
+      //     salePrice:salePrice
+      //   }
+      // ]
+    }
+  },(err,doc)=>{
+    if(err){
+      res.json({
+        status:'1',
+        msg:err.message,
+        result:''
+      })
+    }else{
+      res.json({
+        status:'0',
+        msg:'',
+        result:'suc'
+      })
+    }
+  })
+});
 
 module.exports=router;
