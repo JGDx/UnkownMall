@@ -202,8 +202,10 @@
               let res=response.data;
               if(res.status=='0'){
                   this.addressList=res.result;
-                  if(this.addressList.addressId)    //如果有地址才可以取第一位id
-                    this.selectedAddrId=this.addressList[0].addressId;
+                    for(var i=0;i<this.addressList.length;i++){
+                      if(this.addressList[i].isDefault==true)
+                        this.selectedAddrId=this.addressList[i].addressId;
+                    }
               }else if(res.status=='10001')
               {
                 this.$store.commit("updateLoginFlag",true);
