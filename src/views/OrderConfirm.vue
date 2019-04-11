@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="app" v-title data-title="核对信息">
       <nav-header></nav-header>
       <nav-bread>
         <span slot="bread">查看您的订单</span>

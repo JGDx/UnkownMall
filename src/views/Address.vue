@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" id="app" v-title data-title="收货地址">
     <nav-header></nav-header>
     <nav-bread>
       <span slot="bread">地址列表</span>

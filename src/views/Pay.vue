@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="app" v-title data-title="付款">
       <nav-header></nav-header>
       <nav-bread>
         <span slot="bread">付款</span>

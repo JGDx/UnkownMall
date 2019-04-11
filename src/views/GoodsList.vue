@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="app" v-title data-title="道隐无名商店">
       <nav-header></nav-header>
       <nav-bread>
         <span slot="bread">商品</span>

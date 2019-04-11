@@ -16,7 +16,11 @@ Vue.use(infiniteScroll)
 Vue.config.productionTip = false
 
 Vue.filter("currency",currency);
-
+Vue.directive('title', {
+  inserted: function (el, binding) {
+    document.title = el.dataset.title
+  }
+})
 const store=new Vuex.Store({
   state:{
     nickName:'',
