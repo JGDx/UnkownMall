@@ -92,7 +92,8 @@
         <div slot="message" class="addInput">
           <span>上传图片：</span><input type="file" value=""  class="upimg" @change="upLoad" multiple><br>
           <span>商品名称：</span><input type="text" v-model="addProductName"><br>
-          <span>价格：</span><input type="text" v-model="addSalePrice">
+          <span>价格：</span><input type="text" v-model="addSalePrice"><br>
+          <span>商品类型：</span><input type="text" v-model="addProductType">
         </div>
         <div slot="btnGroup">
           <a href="javascript:;" class="btn btn--m" @click="addGoods">添加</a>
@@ -111,7 +112,8 @@
         <span slot="title">修改商品</span>
         <div slot="message" class="addInput">
           <span>商品名称：</span><input type="text" v-model="updateProductName"><br>
-          <span>价格：</span><input type="text" v-model="updateSalePrice">
+          <span>价格：</span><input type="text" v-model="updateSalePrice"><br>
+          <span>商品类型：</span><input type="text" v-model="updateProductType">
         </div>
         <div slot="btnGroup">
           <a href="javascript:;" class="btn btn--m" @click="updateGoods">修改</a>
@@ -205,10 +207,12 @@
           addProductName:'',
           addSalePrice:0,
           addProductImage:'',
+          addProductType:'',
           delProductId:'',
           updateProductName:'',
           updateSalePrice:0,
           updateProductId:'',
+          updateProductType:'',
           priceFilter:[
             {
               startPrice:'0.00',
@@ -407,7 +411,8 @@
             axios.post('/admin/addGoods',{
               productName:this.addProductName,
               salePrice:this.addSalePrice,
-              productImage:this.addProductImage
+              productImage:this.addProductImage,
+              productType:this.productType
             }).then((response)=>{
               let res=response.data;
               if(res.status=='0'){
@@ -445,7 +450,8 @@
             axios.post("/admin/updateGoods",{
               productId:this.updateProductId,
               productName:this.updateProductName,
-              salePrice:this.updateSalePrice
+              salePrice:this.updateSalePrice,
+              productType:this.updateProductType
             }).then((response)=>{
               let res=response.data;
               if(res.status=='0'){
@@ -460,6 +466,7 @@
             this.updateProductId=item.productId;
             this.updateProductName=item.productName;
             this.updateSalePrice=item.salePrice;
+            this.updateProductType=item.productType;
             this.mdUpdateGoods=true;
         },
         setProductType(item){

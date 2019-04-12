@@ -28,6 +28,7 @@ router.post("/addGoods",(req,res,next)=>{
   let productImage=req.body.productImage;
   let productName=req.body.productName;
   let salePrice=req.body.salePrice;
+  let productType=req.body.productType;
   var platform='606';
   var r1=Math.floor(Math.random()*10);
   var r2=Math.floor(Math.random()*10);
@@ -38,7 +39,8 @@ router.post("/addGoods",(req,res,next)=>{
     productName:productName,
     salePrice:salePrice,
     productImage:productImage,
-    productUrl:''
+    productUrl:'',
+    productType:productType
   };
   var newGoods=new Goods(content);
   newGoods.save((err,doc)=>{
@@ -86,12 +88,14 @@ router.post('/updateGoods',(req,res,next)=>{
   let productId=req.body.productId;
   let productName=req.body.productName;
   let salePrice=req.body.salePrice;
+  let productType=req.body.productType;
   Goods.update({
     productId:productId
   },{
     $set:{
       productName:productName,
-      salePrice:salePrice
+      salePrice:salePrice,
+      productType:productType
       // $and:[
       //   {
       //     productName:productName
