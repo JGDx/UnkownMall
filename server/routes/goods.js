@@ -24,6 +24,7 @@ router.get("/list",(req,res,next)=> {
   let skip = (page - 1) * pageSize;
   let priceGte = parseInt(req.param("priceGte"));
   let priceLt = parseInt(req.param("priceLt"));
+  let productType=req.param("productType");
   let params = {};
 
   if (priceLt != 0 && priceLt != NaN) {
@@ -45,7 +46,9 @@ router.get("/list",(req,res,next)=> {
       productName:{$regex:searchContent}
     };
   }
-
+  if(productType!="all"){
+    params["productType"]=productType;
+  }
   let goodsModel = Goods.find(params).skip(skip).limit(pageSize);
   if (sort != 0) {
     goodsModel.sort({'salePrice': sort})

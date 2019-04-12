@@ -10,6 +10,10 @@
             <div style="float:left">
               <input type="text" class="search" v-model="inputContent" @keyup.enter="search" >
               <a href="javascript:;" class="btn btn--white" @click="search" >搜索</a>
+              <select v-model="productType" @change="setProductType(productType)">
+                <option value="all" >全部</option>
+                <option v-for="item in productTypeList" >{{item}}</option>
+              </select>
               <a class="btn--s" v-if="admin" @click="mdAddGoods=true">添加新商品</a>
             </div>
             <span class="sortby">排序:</span>
@@ -225,12 +229,14 @@
           ],
           priceChecked:'all',
           filterBy:false,
-          overLayFlag:false
+          overLayFlag:false,
+          productType:'all',
+          productTypeList:[]
        }
       },
       name: "GoodsList",
       computed:{
-        ...mapState(['admin'])
+        ...mapState(['admin']),
       },
       components:{
         NavHeader,
@@ -252,7 +258,8 @@
               sort:this.sortBy==1?this.sortFlag:0,
               priceGte:this.priceGte,
               priceLt:this.priceLt,
-              searchContent:this.searchContent
+              searchContent:this.searchContent,
+              productType:this.productType
             };
             this.loading=true;
             axios.get("/goods/list",{
@@ -271,6 +278,11 @@
                 }else{
                   this.goodsList=res.result.list;
                   this.busy=false;
+                }
+                for(let item in this.goodsList){
+                  if(this.productTypeList.indexOf(this.goodsList[item].productType)==-1){
+                    this.productTypeList.push(this.goodsList[item].productType);
+                  }
                 }
               }else{
                 if(res.status=='10001')
@@ -449,6 +461,10 @@
             this.updateProductName=item.productName;
             this.updateSalePrice=item.salePrice;
             this.mdUpdateGoods=true;
+        },
+        setProductType(item){
+            this.productType=item;
+            this.getGoodsList(false);
         }
       }
     }

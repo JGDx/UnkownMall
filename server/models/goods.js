@@ -8,7 +8,8 @@ var productSchema=new Schema({
   "productImage":String,
   "checked":String,
   "productNum":Number,
-  "productUrl":String
+  "productUrl":String,
+  "productType":String
 });
 
 module.exports=mongoose.model('Good',productSchema);
